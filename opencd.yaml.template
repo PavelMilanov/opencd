@@ -1,3 +1,8 @@
-name: <test>
-environment: <test> (stage, prod)
-docker-compose: <test>
+environments:
+  - test:
+    name: test
+    docker: docker-compose.yaml
+
+  - prod:
+    name: prod
+    docker: docker-compose.prod.yaml
