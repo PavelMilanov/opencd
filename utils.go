@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"regexp"
 
 	"gopkg.in/yaml.v3"
 )
@@ -47,4 +48,9 @@ func readOpencdFile() {
 		panic(err)
 	}
 	fmt.Println(config)
+}
+
+func parsePathFile(filepath string) {
+	match, _ := regexp.MatchString("^.\\/", filepath)
+	fmt.Println(match)
 }
