@@ -9,6 +9,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// Структуры для работы с файлом opencd.yaml
 type OpenCd struct {
 	Environments []Environments `yaml:"environments"`
 }

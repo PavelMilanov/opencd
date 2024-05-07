@@ -9,8 +9,6 @@ const OPENCD_CONFIG = "opencd.yaml"
 
 func main() {
 	checkComponents()
-	// pwd := getCurrentDirectory()
-	// fmt.Println(pwd)
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
 		case "deploy":
