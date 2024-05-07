@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"regexp"
@@ -50,7 +51,27 @@ func readOpencdFile() {
 	fmt.Println(config)
 }
 
-func parsePathFile(filepath string) {
-	match, _ := regexp.MatchString("^.\\/", filepath)
-	fmt.Println(match)
+// Парсинг пути файла (относитеьный и абсолютный путь)
+func parsePathFile(filepath string) (string, error) {
+	// парсинг относительного пути файла
+	relativePath, _ := regexp.Compile(`^.\/`)
+	idx := relativePath.FindStringIndex(filepath)
+	pwd := getCurrentDirectory()
+	if len(idx) > 0 {
+		i := idx[1]
+		return pwd + "/" + filepath[i:], nil
+	} else {
+		if filepath == OPENCD_CONFIG {
+			return pwd + "/" + filepath, nil
+		} else {
+			// парсинг абсолютного пути файла
+			absolutePath, _ := regexp.Compile(`^/`)
+			match := absolutePath.MatchString(filepath)
+			if match {
+				return filepath, nil
+			}
+			// ошибка, если не найдет файл
+			return "", errors.New("file not found: " + filepath)
+		}
+	}
 }
