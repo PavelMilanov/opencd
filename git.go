@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 )
@@ -16,18 +18,24 @@ func displayCommits() {
 }
 
 func gitPull() {
-	const NotUpdate string = "Already up to date.\n"
-
-	pull, err := exec.Command("bash", "-c", "git pull").Output()
+	diff, err := exec.Command("bash", "-c", "git diff origin/dev dev").Output()
 	if err != nil {
-		fmt.Println("error from git pull: ", err)
+		fmt.Println("error from git diff: ", err)
 		os.Exit(1)
 	}
-	if string(pull) == NotUpdate {
-		fmt.Println("Нет обновлений в текущей ветке")
-		return
+	// fmt.Print(string(diff))
+	buffer := bytes.NewBuffer(diff)
+	for {
+		n, err := buffer.ReadString('\n')
+		fmt.Print(n)
+		// fmt.Println(n, err, buf[:n])
+		if err == io.EOF {
+			break
+		}
 	}
-	fmt.Print(string(pull))
+	// fmt.Println(reader)
+	// r, _ := regexp.Compile(`a/.+$`)
+	// fmt.Println(r.FindAllString(string(diff), -1))
 }
 
 func deploy() {
