@@ -6,9 +6,14 @@ import (
 )
 
 const OPENCD_CONFIG = "opencd.yaml"
+const DOCKER_COMPOSE = "docker-compose.*"
 
 func main() {
-	checkComponents()
+	err := checkComponents()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
 		case "deploy":

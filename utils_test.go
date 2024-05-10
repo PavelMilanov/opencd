@@ -24,3 +24,10 @@ func TestParsePathFile(t *testing.T) {
 		t.Errorf("%s is not found", test3)
 	}
 }
+
+func TestCheckComponents(t *testing.T) {
+	err := checkComponents()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}

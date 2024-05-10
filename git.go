@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 func displayCommits() {
@@ -17,25 +18,30 @@ func displayCommits() {
 	fmt.Println(string(commits))
 }
 
+// Проверяет изменения в ветках репозитория и возвращает директории, где были изменения
 func gitPull() {
 	diff, err := exec.Command("bash", "-c", "git diff origin/dev dev").Output()
 	if err != nil {
 		fmt.Println("error from git diff: ", err)
 		os.Exit(1)
 	}
-	// fmt.Print(string(diff))
 	buffer := bytes.NewBuffer(diff)
+	// var changeFolders map[string]string
 	for {
-		n, err := buffer.ReadString('\n')
-		fmt.Print(n)
-		// fmt.Println(n, err, buf[:n])
+		line, err := buffer.ReadString('\n')
 		if err == io.EOF {
 			break
 		}
+		// ишем строчки diff --git .....
+		if strings.HasPrefix(line, "diff --git") {
+			commit := strings.Split(line, " ")[2]          // diff --git a/test1/file1.txt b/test1/file1.txt => a/test1/file1.txt
+			commitChange := strings.Split(commit, "a/")[1] // [ test1/file1.txt] => test1/file1.txt
+			// folder := strings.Split(commitChange, "/")[0]  // test1/file1.txt => test1
+			// fmt.Println(folder)
+			// changeFolders[folder] = folder
+			fmt.Println(commitChange)
+		}
 	}
-	// fmt.Println(reader)
-	// r, _ := regexp.Compile(`a/.+$`)
-	// fmt.Println(r.FindAllString(string(diff), -1))
 }
 
 func deploy() {

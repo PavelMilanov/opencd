@@ -23,23 +23,30 @@ func getCurrentDirectory() string {
 	pwd, err := os.Getwd()
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		panic(err)
 	}
 	return pwd
 }
 
 // Проверка на наличие необходимых файлов
-func checkComponents() {
+func checkComponents() error {
 	pwd := getCurrentDirectory()
 	configFile := pwd + "/" + OPENCD_CONFIG
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
-		fmt.Println(err)
-		os.Exit(1)
+		return fmt.Errorf("не найден файл %s", configFile)
 	}
+	config := readOpencdFile()
+	for _, data := range config.Environments {
+		file := pwd + "/" + data.Docker
+		if _, err := os.Stat(file); os.IsNotExist(err) {
+			return fmt.Errorf("не найден файл %s", file)
+		}
+	}
+	return nil
 }
 
 // Парсинг файла конфигурации opencd
-func readOpencdFile() {
+func readOpencdFile() OpenCd {
 	var config OpenCd
 	file, err := os.ReadFile(OPENCD_CONFIG)
 	if err != nil {
@@ -49,7 +56,7 @@ func readOpencdFile() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(config)
+	return config
 }
 
 // Парсинг пути файла (относитеьный и абсолютный путь)
