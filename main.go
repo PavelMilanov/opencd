@@ -6,7 +6,6 @@ import (
 )
 
 const OPENCD_CONFIG = "opencd.yaml"
-const DOCKER_COMPOSE = "docker-compose.*"
 
 func main() {
 	err := checkComponents()
