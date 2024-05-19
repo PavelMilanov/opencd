@@ -25,7 +25,7 @@ func formatChankData(chank string) (string, string) {
 	str := strings.Split(build, ":")[1] // ./test/test]
 	re2 := regexp.MustCompile(`^\w+`)   // имя сервиса всегда с новой строки во фрагменте файла
 	name := re2.FindString(chank)
-	return name, str[:len(str)-1] // test, ./test/test
+	return name, str[2 : len(str)-1] // test, test/test
 }
 
 func parseDockerCompose(filename string) []Service {

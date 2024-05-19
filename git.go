@@ -19,12 +19,14 @@ func displayCommits() {
 }
 
 // Проверяет изменения в ветках репозитория и возвращает директории, где были изменения
-func gitPull() {
-	diff, err := exec.Command("bash", "-c", "git diff origin/dev dev").Output()
+func gitPull(localBranch string, remoteBranch string) []string {
+	command := fmt.Sprintf("git diff %s %s", remoteBranch, localBranch)
+	diff, err := exec.Command("bash", "-c", command).Output()
 	if err != nil {
 		fmt.Println("error from git diff: ", err)
 		os.Exit(1)
 	}
+	changes := []string{}
 	buffer := bytes.NewBuffer(diff)
 	for {
 		line, err := buffer.ReadString('\n')
@@ -35,11 +37,27 @@ func gitPull() {
 		if strings.HasPrefix(line, "diff --git") {
 			commit := strings.Split(line, " ")[2]          // diff --git a/test1/file1.txt b/test1/file1.txt => a/test1/file1.txt
 			commitChange := strings.Split(commit, "a/")[1] // [ test1/file1.txt] => test1/file1.txt
-			fmt.Println(commitChange)
+			changes = append(changes, commitChange)
 		}
 	}
+	return changes
+}
+
+func analuzeChanges(services []Service, commits []string) []Service {
+	changeService := []Service{}
+	for _, service := range services {
+		match := strings.Split(service.Build, "/")[0] // название папки
+		for _, change := range commits {              //ищем совпадения папок в docker-compose и изменениях коммита
+			if strings.Contains(change, match) {
+				changeService = append(changeService, Service{Name: service.Name, Build: service.Build})
+			}
+		}
+	}
+	return changeService
 }
 
 func deploy() {
-	gitPull()
+	changes := gitPull("origin/dev", "dev")
+	services := parseDockerCompose("docker-compose.yaml")
+	analuzeChanges(services, changes)
 }
