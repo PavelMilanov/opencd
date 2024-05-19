@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"testing"
 )
@@ -33,5 +34,6 @@ func TestCheckComponents(t *testing.T) {
 }
 
 func TestParseDockerCompose(t *testing.T) {
-	ParseDockerCompose("docker-compose.yaml")
+	data := ParseDockerCompose("docker-compose.yaml")
+	fmt.Println(data)
 }

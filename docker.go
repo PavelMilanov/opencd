@@ -19,7 +19,16 @@ type Service struct {
 	Build string
 }
 
-func ParseDockerCompose(filename string) {
+func formatChankData(chank string) (string, string) {
+	re := regexp.MustCompile(`context:[^\s]+`)
+	build := re.FindString(chank)       // context:./test/test]
+	str := strings.Split(build, ":")[1] // ./test/test]
+	re2 := regexp.MustCompile(`^\w+`)   // имя сервиса всегда с новой строки во фрагменте файла
+	name := re2.FindString(chank)
+	return name, str[:len(str)-1] // test, ./test/test
+}
+
+func ParseDockerCompose(filename string) []Service {
 	file, err := os.ReadFile(filename)
 	if err != nil {
 		panic(err)
@@ -40,25 +49,13 @@ func ParseDockerCompose(filename string) {
 	for i := 0; i < len(parseData); i++ {
 		if i == len(parseData)-1 {
 			chank := formatData[parseData[i][0] : len(formatData)-1]
-			re := regexp.MustCompile(`context:[^\s]+`)
-			build := re.FindString(chank)
-			str := strings.Split(build, ":")[1]
-			// fmt.Println(str[:len(str)-1])
-			re2 := regexp.MustCompile(`^\w+`)
-			name := re2.FindString(chank)
-			// fmt.Println(name)
-			services = append(services, Service{Name: name, Build: str})
+			name, build := formatChankData(chank)
+			services = append(services, Service{Name: name, Build: build})
 		} else {
 			chank := formatData[parseData[i][0]:parseData[i+1][0]] // последний кусок из списка
-			re := regexp.MustCompile(`context:[^\s]+`)
-			build := re.FindString(chank) // context:./backend/backend]
-			str := strings.Split(build, ":")[1]
-			// fmt.Println(str[:len(str)-1]) // ./backend/backend
-			re2 := regexp.MustCompile(`^\w+`)
-			name := re2.FindString(chank)
-			// fmt.Println(name) // backend
-			services = append(services, Service{Name: name, Build: str})
+			name, build := formatChankData(chank)
+			services = append(services, Service{Name: name, Build: build})
 		}
 	}
-	fmt.Println(services)
+	return services
 }
