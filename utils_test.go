@@ -7,7 +7,11 @@ import (
 )
 
 func TestReadOpencdFile(t *testing.T) {
-	readOpencdFile()
+	data, err := readOpencdFile()
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+	fmt.Println(data)
 }
 
 func TestParsePathFile(t *testing.T) {
@@ -34,6 +38,6 @@ func TestCheckComponents(t *testing.T) {
 }
 
 func TestParseDockerCompose(t *testing.T) {
-	data := ParseDockerCompose("docker-compose.yaml")
+	data := parseDockerCompose("docker-compose.yaml")
 	fmt.Println(data)
 }

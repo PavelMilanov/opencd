@@ -15,6 +15,8 @@ type OpenCd struct {
 }
 type Environments struct {
 	Name   string `yaml:"name"`
+	Local  string `yaml:"local"`
+	Remote string `yaml:"remote"`
 	Docker string `yaml:"docker"`
 }
 
@@ -35,7 +37,10 @@ func checkComponents() error {
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
 		return fmt.Errorf("не найден файл %s", configFile)
 	}
-	config := readOpencdFile()
+	config, err := readOpencdFile()
+	if err != nil {
+		panic(err)
+	}
 	for _, data := range config.Environments {
 		file := pwd + "/" + data.Docker
 		if _, err := os.Stat(file); os.IsNotExist(err) {
@@ -46,7 +51,7 @@ func checkComponents() error {
 }
 
 // Парсинг файла конфигурации opencd
-func readOpencdFile() OpenCd {
+func readOpencdFile() (OpenCd, error) {
 	var config OpenCd
 	file, err := os.ReadFile(OPENCD_CONFIG)
 	if err != nil {
@@ -56,7 +61,18 @@ func readOpencdFile() OpenCd {
 	if err != nil {
 		panic(err)
 	}
-	return config
+	for _, env := range config.Environments {
+		if env.Name == "" {
+			return config, fmt.Errorf("не указано окружение в файле конфигурации opencd.yaml")
+		} else if env.Local == "" {
+			return config, fmt.Errorf("не указана локальная ветка в окружении %s opencd.yaml", env.Name)
+		} else if env.Remote == "" {
+			return config, fmt.Errorf("не указана удаленная ветка в окружении %s opencd.yaml", env.Name)
+		} else if env.Docker == "" {
+			return config, fmt.Errorf("не указан файл docker-compose в окружении %s opencd.yaml", env.Name)
+		}
+	}
+	return config, nil
 }
 
 // Парсинг пути файла (относитеьный и абсолютный путь)

@@ -1,8 +1,12 @@
 environments:
   - test:
     name: test
+    local: dev
+    remote: origin/dev
     docker: docker-compose.yaml
 
   - prod:
     name: prod
+    local: dev
+    remote: origin/dev
     docker: docker-compose.prod.yaml

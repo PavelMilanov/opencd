@@ -28,7 +28,7 @@ func formatChankData(chank string) (string, string) {
 	return name, str[:len(str)-1] // test, ./test/test
 }
 
-func ParseDockerCompose(filename string) []Service {
+func parseDockerCompose(filename string) []Service {
 	file, err := os.ReadFile(filename)
 	if err != nil {
 		panic(err)

@@ -26,7 +26,6 @@ func gitPull() {
 		os.Exit(1)
 	}
 	buffer := bytes.NewBuffer(diff)
-	// var changeFolders map[string]string
 	for {
 		line, err := buffer.ReadString('\n')
 		if err == io.EOF {
@@ -36,9 +35,6 @@ func gitPull() {
 		if strings.HasPrefix(line, "diff --git") {
 			commit := strings.Split(line, " ")[2]          // diff --git a/test1/file1.txt b/test1/file1.txt => a/test1/file1.txt
 			commitChange := strings.Split(commit, "a/")[1] // [ test1/file1.txt] => test1/file1.txt
-			// folder := strings.Split(commitChange, "/")[0]  // test1/file1.txt => test1
-			// fmt.Println(folder)
-			// changeFolders[folder] = folder
 			fmt.Println(commitChange)
 		}
 	}
