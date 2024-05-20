@@ -26,7 +26,7 @@ func TestAnaluzeChanges(t *testing.T) {
 }
 
 func TestSetTmpBranch(t *testing.T) {
-	createDeployBranch("origin/test")
+	createDeployBranch("origin/testing")
 	// fmt.Println(data)
 }
 
