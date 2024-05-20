@@ -18,11 +18,11 @@ func TestAnaluzeChanges(t *testing.T) {
 	result1 := []Service{}
 	result2 := []Service{{Name: "test", Build: "test"}}
 	data1 := analuzeChanges(services, commits1)
-	if reflect.DeepEqual(data1, result1) {
+	if !reflect.DeepEqual(data1, result1) {
 		t.Errorf("%s not equal to result %s", data1, result1)
 	}
 	data2 := analuzeChanges(services, commits2)
-	if reflect.DeepEqual(data2, result2) {
+	if !reflect.DeepEqual(data2, result2) {
 		t.Errorf("%s not equal to result %s", data2, result2)
 	}
 }
