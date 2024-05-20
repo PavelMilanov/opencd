@@ -19,7 +19,7 @@ func displayCommits() {
 }
 
 // Проверяет изменения в ветках репозитория и возвращает директории, где были изменения
-func gitPull(localBranch string, remoteBranch string) []string {
+func gitDiff(localBranch string, remoteBranch string) []string {
 	command := fmt.Sprintf("git diff %s %s", remoteBranch, localBranch)
 	diff, err := exec.Command("bash", "-c", command).Output()
 	if err != nil {
@@ -57,7 +57,8 @@ func analuzeChanges(services []Service, commits []string) []Service {
 }
 
 func deploy() {
-	changes := gitPull("origin/dev", "dev")
+	changes := gitDiff("origin/test", "dev")
 	services := parseDockerCompose("docker-compose.yaml")
-	analuzeChanges(services, changes)
+	updateServices := analuzeChanges(services, changes)
+	fmt.Println(updateServices)
 }

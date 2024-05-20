@@ -1,14 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"reflect"
-	"strings"
 	"testing"
 )
 
 func TestGitPull(t *testing.T) {
-	gitPull("origin/dev", "dev")
+	gitDiff("origin/dev", "dev")
 }
 
 func TestAnaluzeChanges(t *testing.T) {
@@ -28,17 +26,5 @@ func TestAnaluzeChanges(t *testing.T) {
 }
 
 func TestDeploy(t *testing.T) {
-	// changes := gitPull("origin/dev", "dev")
-	testChanges := []string{"backend/test1", "test2.txt", "web/test3"}
-	services := parseDockerCompose("docker-compose.yaml")
-	changeService := []Service{}
-	for _, service := range services {
-		match := strings.Split(service.Build, "/")[0] // название папки
-		for _, change := range testChanges {          //ищем совпадения папок в docker-compose и изменениях коммита
-			if strings.Contains(change, match) {
-				changeService = append(changeService, Service{Name: service.Name, Build: service.Build})
-			}
-		}
-	}
-	fmt.Println(changeService, services)
+	deploy()
 }
