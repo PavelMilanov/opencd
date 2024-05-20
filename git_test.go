@@ -25,6 +25,18 @@ func TestAnaluzeChanges(t *testing.T) {
 	}
 }
 
+func TestSetTmpBranch(t *testing.T) {
+	createDeployBranch("origin/test")
+	// fmt.Println(data)
+}
+
 func TestDeploy(t *testing.T) {
-	deploy()
+	// deploy()
+	// command := fmt.Sprintf("git log %s | head  -1", "origin/test")
+	// exec, err := exec.Command("bash", "-c", command).Output()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// shortSha := strings.Split(string(exec), " ")[1][:7] // commit 11e00c3b19f88ec7602c4d115871113e49f63e07 => 11e00c3
+	// fmt.Println("deploy" + "-" + shortSha)
 }

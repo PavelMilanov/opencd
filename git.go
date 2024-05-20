@@ -56,9 +56,31 @@ func analuzeChanges(services []Service, commits []string) []Service {
 	return changeService
 }
 
+func createDeployBranch(remoteBranch string) {
+	command := fmt.Sprintf("git log %s | head  -1", remoteBranch)
+	run1, err := exec.Command("bash", "-c", command).Output()
+	if err != nil {
+		panic(err)
+	}
+	shortSha := strings.Split(string(run1), " ")[1][:7] // commit 11e00c3b19f88ec7602c4d115871113e49f63e07 => 11e00c3
+	deployBranch := "deploy" + "-" + shortSha
+	command2 := fmt.Sprintf("git branch %s && git merge %s %s", deployBranch, remoteBranch, deployBranch)
+	run2, err := exec.Command("bash", "-c", command2).Output()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(run2))
+}
+
 func deploy() {
-	changes := gitDiff("origin/test", "dev")
+	changes := gitDiff("origin/test", "test")
 	services := parseDockerCompose("docker-compose.yaml")
 	updateServices := analuzeChanges(services, changes)
-	fmt.Println(updateServices)
+	fmt.Println("Обнаружены изменения в сервисах:")
+	for _, service := range updateServices {
+		text := fmt.Sprintf("- %s ", service.Name)
+		fmt.Println(text)
+	}
+	createDeployBranch("origin/test")
+
 }
