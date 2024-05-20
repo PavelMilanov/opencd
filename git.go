@@ -64,7 +64,7 @@ func createDeployBranch(remoteBranch string) {
 	}
 	shortSha := strings.Split(string(run1), " ")[1][:7] // commit 11e00c3b19f88ec7602c4d115871113e49f63e07 => 11e00c3
 	deployBranch := "deploy" + "-" + shortSha
-	command2 := fmt.Sprintf("git chekout -b %s && git merge %s", deployBranch, remoteBranch)
+	command2 := fmt.Sprintf("git branch %s && git merge %s %s", deployBranch, remoteBranch, deployBranch)
 	run2, err := exec.Command("bash", "-c", command2).Output()
 	if err != nil {
 		panic(err)
