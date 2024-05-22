@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	"os/exec"
 	"reflect"
 	"testing"
 )
 
-func TestGitPull(t *testing.T) {
-	gitDiff("origin/dev", "dev")
+func TestGitDiff(t *testing.T) {
+	data := gitDiff("origin/testing", "dev2")
+	fmt.Println(data)
 }
 
 func TestAnaluzeChanges(t *testing.T) {
@@ -33,12 +33,12 @@ func TestCreateDeployBranch(t *testing.T) {
 }
 
 func TestDeploy(t *testing.T) {
-	// deploy()
-	exec, err := exec.Command("bash", "-c", "git checkout -b test2 && git merge origin/testing").Output()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(string(exec))
+	deploy()
+	// exec, err := exec.Command("bash", "-c", "git checkout -b test2 && git merge origin/testing").Output()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println(string(exec))
 	// shortSha := strings.Split(string(exec), " ")[1][:7] // commit 11e00c3b19f88ec7602c4d115871113e49f63e07 => 11e00c3
 	// fmt.Println("deploy" + "-" + shortSha)
 }
