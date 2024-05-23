@@ -86,14 +86,14 @@ func createDeployBranch(remoteBranch string) string {
 		panic(err)
 	}
 	fmt.Println(string(run2)) // тут нужно переключение на рабочую ветку
-	return string(run2)
+	return deployBranch
 }
 
 func deleteDeployBranch(branch string) {
 	command := fmt.Sprintf("git branch -D %s", branch)
 	run, err := exec.Command("bash", "-c", command).Output()
 	if err != nil {
-		fmt.Println("Ошибка при создании ветки для деплоя")
+		fmt.Println("Ошибка при удалении ветки для деплоя")
 		panic(err)
 	}
 	fmt.Println(string(run))
@@ -101,16 +101,10 @@ func deleteDeployBranch(branch string) {
 
 // Производит git merge для рабочей ветки из ветки, созданной в <createDeployBranch>. Если нет ошибок, временная ветка будет удалена
 func gitMerge(localBranch, deployBranch string) {
-	command1 := fmt.Sprintf("git checkout %s", localBranch)
-	run, err := exec.Command("bash", "-c", command1).Output()
+	command := fmt.Sprintf("git checkout %s && git merge %s", localBranch, deployBranch)
+	run, err := exec.Command("bash", "-c", command).Output()
 	if err != nil {
 		fmt.Println("Ошибка", string(run))
-		panic(err)
-	}
-	command2 := fmt.Sprintf("git merge %s", deployBranch)
-	run2, err := exec.Command("bash", "-c", command2).Output()
-	if err != nil {
-		fmt.Println("Ошибка", string(run2))
 		panic(err)
 	}
 	fmt.Println(string(run))
@@ -132,6 +126,7 @@ func deploy() {
 		fmt.Println(text)
 	}
 	branch := createDeployBranch("origin/dev")
+	fmt.Println(branch)
 	gitMerge("dev3", branch)
 	deleteDeployBranch(branch)
 	// тут стартует докер
