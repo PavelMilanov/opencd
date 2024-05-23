@@ -101,10 +101,16 @@ func deleteDeployBranch(branch string) {
 
 // Производит git merge для рабочей ветки из ветки, созданной в <createDeployBranch>. Если нет ошибок, временная ветка будет удалена
 func gitMerge(localBranch, deployBranch string) {
-	command := fmt.Sprintf("git checkout %s && git merge %s", localBranch, deployBranch)
-	run, err := exec.Command("bash", "-c", command).Output()
+	command1 := fmt.Sprintf("git checkout %s", localBranch)
+	run, err := exec.Command("bash", "-c", command1).Output()
 	if err != nil {
-		fmt.Println("Ошибка при слиянии в рабочую ветку")
+		fmt.Println("Ошибка", string(run))
+		panic(err)
+	}
+	command2 := fmt.Sprintf("git merge %s", deployBranch)
+	run2, err := exec.Command("bash", "-c", command2).Output()
+	if err != nil {
+		fmt.Println("Ошибка", string(run2))
 		panic(err)
 	}
 	fmt.Println(string(run))
@@ -113,7 +119,7 @@ func gitMerge(localBranch, deployBranch string) {
 
 func deploy() {
 	gitFetch()
-	changes := gitDiff("origin/dev", "dev2")
+	changes := gitDiff("dev3", "origin/dev")
 	services := parseDockerCompose("docker-compose.yaml")
 	updateServices := analuzeChanges(services, changes)
 	if len(updateServices) == 0 {
@@ -126,7 +132,7 @@ func deploy() {
 		fmt.Println(text)
 	}
 	branch := createDeployBranch("origin/dev")
-	gitMerge("dev2", branch)
+	gitMerge("dev3", branch)
 	deleteDeployBranch(branch)
 	// тут стартует докер
 
