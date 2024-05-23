@@ -32,7 +32,7 @@ func TestCreateDeployBranch(t *testing.T) {
 }
 
 func TestGitMerge(t *testing.T) {
-	gitMerge("dev2", "deploy-702996a")
+	gitMerge("dev3", "deploy-702996a")
 }
 
 func TestDeploy(t *testing.T) {

@@ -89,6 +89,16 @@ func createDeployBranch(remoteBranch string) string {
 	return string(run2)
 }
 
+func deleteDeployBranch(branch string) {
+	command := fmt.Sprintf("git branch -D %s", branch)
+	run, err := exec.Command("bash", "-c", command).Output()
+	if err != nil {
+		fmt.Println("Ошибка при создании ветки для деплоя")
+		panic(err)
+	}
+	fmt.Println(string(run))
+}
+
 // Производит git merge для рабочей ветки из ветки, созданной в <createDeployBranch>. Если нет ошибок, временная ветка будет удалена
 func gitMerge(localBranch, deployBranch string) {
 	command := fmt.Sprintf("git checkout %s && git merge %s", localBranch, deployBranch)
@@ -117,6 +127,7 @@ func deploy() {
 	}
 	branch := createDeployBranch("origin/dev")
 	gitMerge("dev2", branch)
+	deleteDeployBranch(branch)
 	// тут стартует докер
 
 }
