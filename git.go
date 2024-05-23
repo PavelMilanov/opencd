@@ -128,5 +128,6 @@ func deploy(config Environments) {
 	fmt.Println(branch)
 	gitMerge(config.Local, branch)
 	deleteDeployBranch(branch)
-	// тут стартует докер
+	buildServices := buildDockerCompose(updateServices, config.Docker)
+	upDockerCompose(buildServices, config.Docker)
 }
