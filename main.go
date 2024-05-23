@@ -22,13 +22,13 @@ func main() {
 			}
 			deploy(config.Environments[0])
 		case "rollback":
-			fmt.Println("rollback")
+			fmt.Println("в разработке")
 		case "commits":
 			displayCommits()
 		default:
-			fmt.Println("unknown command")
+			fmt.Println("неизвесная команда")
 		}
 	} else {
-		fmt.Println("bad command")
+		fmt.Println("неизвесная команда")
 	}
 }
