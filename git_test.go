@@ -28,17 +28,17 @@ func TestAnaluzeChanges(t *testing.T) {
 }
 
 func TestCreateDeployBranch(t *testing.T) {
-	createDeployBranch("origin/testing")
-	// fmt.Println(data)
+	createDeployBranch("origin/dev")
+}
+
+func TestGitMerge(t *testing.T) {
+	gitMerge("dev3", "deploy-702996a")
 }
 
 func TestDeploy(t *testing.T) {
-	deploy()
-	// exec, err := exec.Command("bash", "-c", "git checkout -b test2 && git merge origin/testing").Output()
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println(string(exec))
-	// shortSha := strings.Split(string(exec), " ")[1][:7] // commit 11e00c3b19f88ec7602c4d115871113e49f63e07 => 11e00c3
-	// fmt.Println("deploy" + "-" + shortSha)
+	config, err := readOpencdFile()
+	if err != nil {
+		panic(err)
+	}
+	deploy(config.Environments[0])
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"regexp"
 	"strings"
 
@@ -19,6 +20,7 @@ type Service struct {
 	Build string
 }
 
+// Форматированный вывод строк
 func formatChankData(chank string) (string, string) {
 	re := regexp.MustCompile(`context:[^\s]+`)
 	build := re.FindString(chank)       // context:./test/test]
@@ -28,6 +30,7 @@ func formatChankData(chank string) (string, string) {
 	return name, str[2 : len(str)-1] // test, test/test
 }
 
+// Выполняет парсинг файла docker-compose. Возврашает список сервисов, у которых собираемый локально образ.
 func parseDockerCompose(filename string) []Service {
 	file, err := os.ReadFile(filename)
 	if err != nil {
@@ -58,4 +61,30 @@ func parseDockerCompose(filename string) []Service {
 		}
 	}
 	return services
+}
+
+// запускает сборку сервисов из docker-compose файла, у которых изменился код.
+// Возвращает список названий сервисов для сборки.
+func buildDockerCompose(services []Service, composeFile string) []string {
+	serviceNameList := []string{}
+	for _, s := range services {
+		serviceNameList = append(serviceNameList, s.Name)
+	}
+	command := fmt.Sprintf("docker compose -f %s build %s", composeFile, strings.Join(serviceNameList, " "))
+	run, err := exec.Command("bash", "-c", command).Output()
+	if err != nil {
+		fmt.Println("Ошибка", string(run))
+		panic(err)
+	}
+	return serviceNameList
+}
+
+// Запускает сервисы docker-compose, переданные в параметры функции.
+func upDockerCompose(services []string, composeFile string) {
+	command := fmt.Sprintf("docker compose -f %s up -d %s", composeFile, strings.Join(services, " "))
+	run, err := exec.Command("bash", "-c", command).Output()
+	if err != nil {
+		fmt.Println("Ошибка", string(run))
+		panic(err)
+	}
 }

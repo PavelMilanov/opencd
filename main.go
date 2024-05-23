@@ -16,15 +16,19 @@ func main() {
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
 		case "deploy":
-			deploy()
+			config, err := readOpencdFile()
+			if err != nil {
+				panic(err)
+			}
+			deploy(config.Environments[0])
 		case "rollback":
-			fmt.Println("rollback")
+			fmt.Println("в разработке")
 		case "commits":
 			displayCommits()
 		default:
-			fmt.Println("unknown command")
+			fmt.Println("неизвесная команда")
 		}
 	} else {
-		fmt.Println("bad command")
+		fmt.Println("неизвесная команда")
 	}
 }
