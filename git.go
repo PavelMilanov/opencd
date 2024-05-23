@@ -79,9 +79,10 @@ func createDeployBranch(remoteBranch string) string {
 	}
 	shortSha := strings.Split(string(run1), " ")[1][:7] // commit 11e00c3b19f88ec7602c4d115871113e49f63e07 => 11e00c3
 	deployBranch := "deploy" + "-" + shortSha
-	command2 := fmt.Sprintf("checkout -b %s && git merge %s", deployBranch, remoteBranch) // переключение на ветку деплоя и применение изменений
+	command2 := fmt.Sprintf("git checkout -b %s && git merge %s", deployBranch, remoteBranch) // переключение на ветку деплоя и применение изменений
 	run2, err := exec.Command("bash", "-c", command2).Output()
 	if err != nil {
+		fmt.Println("Ошибка при создании ветки для деплоя")
 		panic(err)
 	}
 	fmt.Println(string(run2)) // тут нужно переключение на рабочую ветку
@@ -90,9 +91,10 @@ func createDeployBranch(remoteBranch string) string {
 
 // Производит git merge для рабочей ветки из ветки, созданной в <createDeployBranch>. Если нет ошибок, временная ветка будет удалена
 func gitMerge(localBranch, deployBranch string) {
-	command := fmt.Sprintf("checkout %s && git merge %s", localBranch, deployBranch)
+	command := fmt.Sprintf("git checkout %s && git merge %s", localBranch, deployBranch)
 	run, err := exec.Command("bash", "-c", command).Output()
 	if err != nil {
+		fmt.Println("Ошибка при слиянии в рабочую ветку")
 		panic(err)
 	}
 	fmt.Println(string(run))
@@ -101,19 +103,19 @@ func gitMerge(localBranch, deployBranch string) {
 
 func deploy() {
 	gitFetch()
-	changes := gitDiff("origin/testing", "dev2")
+	changes := gitDiff("origin/dev", "dev2")
 	services := parseDockerCompose("docker-compose.yaml")
 	updateServices := analuzeChanges(services, changes)
 	if len(updateServices) == 0 {
 		fmt.Println("Изменений не обнаружено")
-		os.Exit(0)
+		// os.Exit(0)
 	}
 	fmt.Println("Обнаружены изменения в:")
-	for idx, service := range updateServices {
-		text := fmt.Sprintf(" - %d) %s ", idx+1, service.Name)
+	for _, service := range updateServices {
+		text := fmt.Sprintf(" - %s ", service.Name)
 		fmt.Println(text)
 	}
-	branch := createDeployBranch("origin/testing")
+	branch := createDeployBranch("origin/dev")
 	gitMerge("dev2", branch)
 	// тут стартует докер
 

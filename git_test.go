@@ -28,8 +28,11 @@ func TestAnaluzeChanges(t *testing.T) {
 }
 
 func TestCreateDeployBranch(t *testing.T) {
-	createDeployBranch("origin/testing")
-	// fmt.Println(data)
+	createDeployBranch("origin/dev")
+}
+
+func TestGitMerge(t *testing.T) {
+	gitMerge("dev2", "deploy-702996a")
 }
 
 func TestDeploy(t *testing.T) {
