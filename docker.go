@@ -63,7 +63,7 @@ func parseDockerCompose(filename string) []Service {
 	return services
 }
 
-// запускает сборку сервисов из docker-compose файла, у которых изменился код.
+// Запускает сборку сервисов из docker-compose файла, у которых изменился код.
 // Возвращает список названий сервисов для сборки.
 func buildDockerCompose(services []Service, composeFile string) []string {
 	serviceNameList := []string{}

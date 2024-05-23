@@ -5,5 +5,11 @@ import (
 )
 
 func TestBuildDockerCompose(t *testing.T) {
-	// buildDockerComposeService()
+	services := []Service{{Name: "test", Build: "./back"}}
+	buildDockerCompose(services, "docker-compose.yaml")
+}
+
+func TestUpDockerCompose(t *testing.T) {
+	services := []string{"test"}
+	upDockerCompose(services, "docker-compose.yaml")
 }
