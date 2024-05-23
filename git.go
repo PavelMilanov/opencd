@@ -80,12 +80,11 @@ func createDeployBranch(remoteBranch string) string {
 	shortSha := strings.Split(string(run1), " ")[1][:7] // commit 11e00c3b19f88ec7602c4d115871113e49f63e07 => 11e00c3
 	deployBranch := "deploy" + "-" + shortSha
 	command2 := fmt.Sprintf("git checkout -b %s && git merge %s", deployBranch, remoteBranch) // переключение на ветку деплоя и применение изменений
-	run2, err := exec.Command("bash", "-c", command2).Output()
+	run, err := exec.Command("bash", "-c", command2).Output()
 	if err != nil {
-		fmt.Println("Ошибка при создании ветки для деплоя")
+		fmt.Println("Ошибка при создании ветки для деплоя", string(run))
 		panic(err)
 	}
-	fmt.Println(string(run2)) // тут нужно переключение на рабочую ветку
 	return deployBranch
 }
 
@@ -111,24 +110,23 @@ func gitMerge(localBranch, deployBranch string) {
 	// удалить временную ветку
 }
 
-func deploy() {
+func deploy(config Environments) {
 	gitFetch()
-	changes := gitDiff("dev3", "origin/dev")
-	services := parseDockerCompose("docker-compose.yaml")
+	changes := gitDiff(config.Local, config.Remote)
+	services := parseDockerCompose(config.Docker)
 	updateServices := analuzeChanges(services, changes)
 	if len(updateServices) == 0 {
 		fmt.Println("Изменений не обнаружено")
-		// os.Exit(0)
+		os.Exit(0)
 	}
 	fmt.Println("Обнаружены изменения в:")
 	for _, service := range updateServices {
 		text := fmt.Sprintf(" - %s ", service.Name)
 		fmt.Println(text)
 	}
-	branch := createDeployBranch("origin/dev")
+	branch := createDeployBranch(config.Remote)
 	fmt.Println(branch)
-	gitMerge("dev3", branch)
+	gitMerge(config.Local, branch)
 	deleteDeployBranch(branch)
 	// тут стартует докер
-
 }
