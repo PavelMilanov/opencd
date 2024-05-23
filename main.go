@@ -7,6 +7,8 @@ import (
 
 const OPENCD_CONFIG = "opencd.yaml"
 
+var VERSION string
+
 func main() {
 	err := checkComponents()
 	if err != nil {
@@ -25,6 +27,8 @@ func main() {
 			fmt.Println("в разработке")
 		case "commits":
 			displayCommits()
+		case "version":
+			fmt.Println("opencd version:", VERSION)
 		default:
 			fmt.Println("неизвесная команда")
 		}
