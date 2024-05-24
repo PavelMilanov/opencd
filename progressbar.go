@@ -3,11 +3,10 @@ package main
 import "github.com/schollz/progressbar/v3"
 
 var STAGE1 = progressbar.NewOptions(-1,
-	// progressbar.OptionSetWriter(ansi.NewAnsiStdout()), //you should install "github.com/k0kubun/go-ansi"
 	progressbar.OptionEnableColorCodes(true),
 	progressbar.OptionSetElapsedTime(false),
-	progressbar.OptionSetWidth(15),
-	progressbar.OptionSetDescription("[cyan][1/4][reset] Анализ удаленного репозитория..."),
+	progressbar.OptionSetWidth(20),
+	progressbar.OptionSetDescription("[cyan][1/4][reset] Анализ удаленного репозитория...\n"),
 	progressbar.OptionSetTheme(progressbar.Theme{
 		Saucer:        "[green]=[reset]",
 		SaucerHead:    "[green]>[reset]",
@@ -17,11 +16,10 @@ var STAGE1 = progressbar.NewOptions(-1,
 	}))
 
 var STAGE2 = progressbar.NewOptions(-1,
-	// progressbar.OptionSetWriter(ansi.NewAnsiStdout()), //you should install "github.com/k0kubun/go-ansi"
 	progressbar.OptionEnableColorCodes(true),
 	progressbar.OptionSetElapsedTime(false),
-	progressbar.OptionSetWidth(15),
-	progressbar.OptionSetDescription("[cyan][2/4][reset] Анализ конфигурации docker..."),
+	progressbar.OptionSetWidth(20),
+	progressbar.OptionSetDescription("[cyan][2/4][reset] Анализ конфигурации docker...\n"),
 	progressbar.OptionSetTheme(progressbar.Theme{
 		Saucer:        "[green]=[reset]",
 		SaucerHead:    "[green]>[reset]",
@@ -31,11 +29,10 @@ var STAGE2 = progressbar.NewOptions(-1,
 	}))
 
 var STAGE3 = progressbar.NewOptions(-1,
-	// progressbar.OptionSetWriter(ansi.NewAnsiStdout()), //you should install "github.com/k0kubun/go-ansi"
 	progressbar.OptionEnableColorCodes(true),
 	progressbar.OptionSetElapsedTime(false),
-	progressbar.OptionSetWidth(15),
-	progressbar.OptionSetDescription("[cyan][3/4][reset] Слияние веток..."),
+	progressbar.OptionSetWidth(20),
+	progressbar.OptionSetDescription("[cyan][3/4][reset] Слияние веток...\n"),
 	progressbar.OptionSetTheme(progressbar.Theme{
 		Saucer:        "[green]=[reset]",
 		SaucerHead:    "[green]>[reset]",
@@ -45,11 +42,10 @@ var STAGE3 = progressbar.NewOptions(-1,
 	}))
 
 var STAGE4 = progressbar.NewOptions(-1,
-	// progressbar.OptionSetWriter(ansi.NewAnsiStdout()), //you should install "github.com/k0kubun/go-ansi"
 	progressbar.OptionEnableColorCodes(true),
 	progressbar.OptionSetElapsedTime(false),
-	progressbar.OptionSetWidth(15),
-	progressbar.OptionSetDescription("[cyan][4/4][reset] Сборка и запуск новой версии..."),
+	progressbar.OptionSetWidth(20),
+	progressbar.OptionSetDescription("[cyan][4/4][reset] Сборка и запуск новой версии...\n"),
 	progressbar.OptionSetTheme(progressbar.Theme{
 		Saucer:        "[green]=[reset]",
 		SaucerHead:    "[green]>[reset]",
