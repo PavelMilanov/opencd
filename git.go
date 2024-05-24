@@ -122,7 +122,6 @@ func deploy(config Environments) {
 		fmt.Println(text)
 	}
 	branch := createDeployBranch(config.Remote)
-	fmt.Println(branch)
 	gitMerge(config.Local, branch)
 	deleteDeployBranch(branch)
 	buildServices := buildDockerCompose(updateServices, config.Docker)
