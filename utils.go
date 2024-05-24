@@ -9,7 +9,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Структуры для работы с файлом opencd.yaml
+// Структуры для работы с файлом opencd.yaml.
 type OpenCd struct {
 	Environments []Environments `yaml:"environments"`
 }
@@ -20,7 +20,7 @@ type Environments struct {
 	Docker string `yaml:"docker"`
 }
 
-// Возвращает текущую директорию
+// Возвращает текущую директорию.
 func getCurrentDirectory() string {
 	pwd, err := os.Getwd()
 	if err != nil {
@@ -30,7 +30,7 @@ func getCurrentDirectory() string {
 	return pwd
 }
 
-// Проверка на наличие необходимых файлов
+// Проверка на наличие необходимых файлов.
 func checkComponents() error {
 	pwd := getCurrentDirectory()
 	configFile := pwd + "/" + OPENCD_CONFIG
@@ -50,7 +50,7 @@ func checkComponents() error {
 	return nil
 }
 
-// Парсинг файла конфигурации opencd
+// Парсинг файла конфигурации opencd.
 func readOpencdFile() (OpenCd, error) {
 	var config OpenCd
 	file, err := os.ReadFile(OPENCD_CONFIG)
@@ -75,7 +75,7 @@ func readOpencdFile() (OpenCd, error) {
 	return config, nil
 }
 
-// Парсинг пути файла (относитеьный и абсолютный путь)
+// Парсинг пути файла (относитеьный и абсолютный путь).
 func parsePathFile(filepath string) (string, error) {
 	// парсинг относительного пути файла
 	relativePath, _ := regexp.Compile(`^.\/`)

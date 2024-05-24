@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-// Выводит список всех коммитов
+// Выводит список всех коммитов.
 func displayCommits() {
 	run := exec.Command("bash", "-c", "git log --pretty=format:\"%h - %an, %ar : %s\"")
 	run.Stdout = os.Stdout
@@ -18,9 +18,8 @@ func displayCommits() {
 	run.Run()
 }
 
-// Выполняет git fetch для удаленного репозитория
+// Выполняет git fetch для удаленного репозитория.
 func gitFetch() {
-	// command := fmt.Sprintf("git remote | git fetch")
 	run := exec.Command("bash", "-c", "git remote | git fetch")
 	run.Stdout = os.Stdout
 	run.Stdin = os.Stdin
@@ -28,7 +27,7 @@ func gitFetch() {
 	run.Run()
 }
 
-// Проверяет изменения в ветках репозитория и возвращает директории, где были изменения
+// Проверяет изменения в ветках репозитория и возвращает директории, где были изменения.
 func gitDiff(localBranch string, remoteBranch string) []string {
 	command := fmt.Sprintf("git diff %s %s", remoteBranch, localBranch)
 	diff, err := exec.Command("bash", "-c", command).Output()
@@ -53,7 +52,7 @@ func gitDiff(localBranch string, remoteBranch string) []string {
 	return changes
 }
 
-// Возвращает список сервисов docker-compose, для которых былм изменения в полученных коммитах
+// Возвращает список сервисов docker-compose, для которых былм изменения в полученных коммитах.
 func analuzeChanges(services []Service, commits []string) []Service {
 	changeService := []Service{}
 	for _, service := range services {
@@ -67,7 +66,7 @@ func analuzeChanges(services []Service, commits []string) []Service {
 	return changeService
 }
 
-// Создает отдельную ветку git для применения изменений, возвращает название этой ветки
+// Создает отдельную ветку git для применения изменений, возвращает название этой ветки.
 func createDeployBranch(remoteBranch string) string {
 	command := fmt.Sprintf("git log %s | head  -1", remoteBranch)
 	commitsha, err := exec.Command("bash", "-c", command).Output()
@@ -86,6 +85,7 @@ func createDeployBranch(remoteBranch string) string {
 	return deployBranch
 }
 
+// Удаляет ранее созданную временную ветку для деплоя.
 func deleteDeployBranch(branch string) {
 	command := fmt.Sprintf("git branch -D %s", branch)
 	run := exec.Command("bash", "-c", command)
@@ -95,7 +95,7 @@ func deleteDeployBranch(branch string) {
 	run.Run()
 }
 
-// Производит git merge для рабочей ветки из ветки, созданной в <createDeployBranch>. Если нет ошибок, временная ветка будет удалена
+// Производит git merge для рабочей ветки из ветки, созданной в <createDeployBranch>. Если нет ошибок, временная ветка будет удалена.
 func gitMerge(localBranch, deployBranch string) {
 	command := fmt.Sprintf("git checkout %s && git merge %s", localBranch, deployBranch)
 	run := exec.Command("bash", "-c", command)
@@ -108,10 +108,9 @@ func gitMerge(localBranch, deployBranch string) {
 // Производит git fetch, git merge, docker build, docker up исходя из изменений в коммитах.
 // Собирает и запускает сервисы в указанном файле docker-compose, где обновились файлы.
 func deploy(config Environments) {
-	STAGE1.Add(1)
+	PULL_UPDATE.Add(1)
 	gitFetch()
 	changes := gitDiff(config.Local, config.Remote)
-	STAGE2.Add(1)
 	services := parseDockerCompose(config.Docker)
 	updateServices := analuzeChanges(services, changes)
 	if len(updateServices) == 0 {
@@ -123,12 +122,11 @@ func deploy(config Environments) {
 		text := fmt.Sprintf(" - %s ", service.Name)
 		fmt.Println(text)
 	}
-	STAGE3.Add(1)
+	MERGE_UPDATE.Add(1)
 	branch := createDeployBranch(config.Remote)
 	gitMerge(config.Local, branch)
 	deleteDeployBranch(branch)
-	STAGE4.Add(1)
+	BUILD_UPDATE.Add(1)
 	buildServices := buildDockerCompose(updateServices, config.Docker)
 	upDockerCompose(buildServices, config.Docker)
-	fmt.Println("Обновление завершено")
 }

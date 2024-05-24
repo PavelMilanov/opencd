@@ -20,7 +20,7 @@ type Service struct {
 	Build string
 }
 
-// Форматированный вывод строк
+// Форматированный вывод строк.
 func formatChankData(chank string) (string, string) {
 	re := regexp.MustCompile(`context:[^\s]+`)
 	build := re.FindString(chank)       // context:./test/test]
