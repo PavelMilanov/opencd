@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -12,4 +13,9 @@ func TestBuildDockerCompose(t *testing.T) {
 func TestUpDockerCompose(t *testing.T) {
 	services := []string{"nginx", "postgres"}
 	upDockerCompose(services, "docker-compose.yaml")
+}
+
+func TestParseDockerCompose(t *testing.T) {
+	data := parseDockerCompose("docker-compose.yaml")
+	fmt.Println(data)
 }

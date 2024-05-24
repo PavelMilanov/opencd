@@ -36,8 +36,3 @@ func TestCheckComponents(t *testing.T) {
 		t.Errorf("%s", err)
 	}
 }
-
-func TestParseDockerCompose(t *testing.T) {
-	data := parseDockerCompose("docker-compose.yaml")
-	fmt.Println(data)
-}
