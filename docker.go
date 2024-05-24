@@ -71,20 +71,20 @@ func buildDockerCompose(services []Service, composeFile string) []string {
 		serviceNameList = append(serviceNameList, s.Name)
 	}
 	command := fmt.Sprintf("docker compose -f %s build %s", composeFile, strings.Join(serviceNameList, " "))
-	run, err := exec.Command("bash", "-c", command).Output()
-	if err != nil {
-		fmt.Println("Ошибка", string(run))
-		panic(err)
-	}
+	run := exec.Command("bash", "-c", command)
+	run.Stdout = os.Stdout
+	run.Stdin = os.Stdin
+	run.Stderr = os.Stderr
+	run.Run()
 	return serviceNameList
 }
 
 // Запускает сервисы docker-compose, переданные в параметры функции.
 func upDockerCompose(services []string, composeFile string) {
 	command := fmt.Sprintf("docker compose -f %s up -d %s", composeFile, strings.Join(services, " "))
-	run, err := exec.Command("bash", "-c", command).Output()
-	if err != nil {
-		fmt.Println("Ошибка", string(run))
-		panic(err)
-	}
+	run := exec.Command("bash", "-c", command)
+	run.Stdout = os.Stdout
+	run.Stdin = os.Stdin
+	run.Stderr = os.Stderr
+	run.Run()
 }

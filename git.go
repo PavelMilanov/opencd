@@ -11,23 +11,21 @@ import (
 
 // Выводит список всех коммитов
 func displayCommits() {
-	commits, err := exec.Command("bash", "-c", "git log --pretty=format:\"%h - %an, %ar : %s\"").Output()
-	if err != nil {
-		fmt.Println("error from display commits: ", err)
-		os.Exit(1)
-	}
-	fmt.Println(string(commits))
+	run := exec.Command("bash", "-c", "git log --pretty=format:\"%h - %an, %ar : %s\"")
+	run.Stdout = os.Stdout
+	run.Stdin = os.Stdin
+	run.Stderr = os.Stderr
+	run.Run()
 }
 
 // Выполняет git fetch для удаленного репозитория
 func gitFetch() {
 	// command := fmt.Sprintf("git remote | git fetch")
-	fetch, err := exec.Command("bash", "-c", "git remote | git fetch").Output()
-	if err != nil {
-		fmt.Println("error from git diff: ", err)
-		panic(err)
-	}
-	fmt.Println(string(fetch))
+	run := exec.Command("bash", "-c", "git remote | git fetch")
+	run.Stdout = os.Stdout
+	run.Stdin = os.Stdin
+	run.Stderr = os.Stderr
+	run.Run()
 }
 
 // Проверяет изменения в ветках репозитория и возвращает директории, где были изменения
@@ -72,42 +70,39 @@ func analuzeChanges(services []Service, commits []string) []Service {
 // Создает отдельную ветку git для применения изменений, возвращает название этой ветки
 func createDeployBranch(remoteBranch string) string {
 	command := fmt.Sprintf("git log %s | head  -1", remoteBranch)
-	run1, err := exec.Command("bash", "-c", command).Output()
+	commitsha, err := exec.Command("bash", "-c", command).Output()
 	if err != nil {
 		fmt.Println("Ошибка при работе с удаленной веткой")
 		panic(err)
 	}
-	shortSha := strings.Split(string(run1), " ")[1][:7] // commit 11e00c3b19f88ec7602c4d115871113e49f63e07 => 11e00c3
+	shortSha := strings.Split(string(commitsha), " ")[1][:7] // commit 11e00c3b19f88ec7602c4d115871113e49f63e07 => 11e00c3
 	deployBranch := "deploy" + "-" + shortSha
 	command2 := fmt.Sprintf("git checkout -b %s && git merge %s", deployBranch, remoteBranch) // переключение на ветку деплоя и применение изменений
-	run, err := exec.Command("bash", "-c", command2).Output()
-	if err != nil {
-		fmt.Println("Ошибка при создании ветки для деплоя", string(run))
-		panic(err)
-	}
+	run := exec.Command("bash", "-c", command2)
+	run.Stdout = os.Stdout
+	run.Stdin = os.Stdin
+	run.Stderr = os.Stderr
+	run.Run()
 	return deployBranch
 }
 
 func deleteDeployBranch(branch string) {
 	command := fmt.Sprintf("git branch -D %s", branch)
-	run, err := exec.Command("bash", "-c", command).Output()
-	if err != nil {
-		fmt.Println("Ошибка при удалении ветки для деплоя")
-		panic(err)
-	}
-	fmt.Println(string(run))
+	run := exec.Command("bash", "-c", command)
+	run.Stdout = os.Stdout
+	run.Stdin = os.Stdin
+	run.Stderr = os.Stderr
+	run.Run()
 }
 
 // Производит git merge для рабочей ветки из ветки, созданной в <createDeployBranch>. Если нет ошибок, временная ветка будет удалена
 func gitMerge(localBranch, deployBranch string) {
 	command := fmt.Sprintf("git checkout %s && git merge %s", localBranch, deployBranch)
-	run, err := exec.Command("bash", "-c", command).Output()
-	if err != nil {
-		fmt.Println("Ошибка", string(run))
-		panic(err)
-	}
-	fmt.Println(string(run))
-	// удалить временную ветку
+	run := exec.Command("bash", "-c", command)
+	run.Stdout = os.Stdout
+	run.Stdin = os.Stdin
+	run.Stderr = os.Stderr
+	run.Run()
 }
 
 func deploy(config Environments) {
