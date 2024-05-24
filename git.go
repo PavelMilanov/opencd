@@ -105,6 +105,8 @@ func gitMerge(localBranch, deployBranch string) {
 	run.Run()
 }
 
+// Производит git fetch, git merge, docker build, docker up исходя из изменений в коммитах.
+// Собирает и запускает сервисы в указанном файле docker-compose, где обновились файлы.
 func deploy(config Environments) {
 	gitFetch()
 	changes := gitDiff(config.Local, config.Remote)
