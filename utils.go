@@ -95,7 +95,7 @@ func parsePathFile(filepath string) (string, error) {
 				return filepath, nil
 			}
 			// ошибка, если не найдет файл
-			return "", errors.New("file not found: " + filepath)
+			return "", errors.New("файл не найден: " + filepath)
 		}
 	}
 }
