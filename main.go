@@ -25,14 +25,12 @@ func main() {
 			deploy(config.Environments[0])
 		case "rollback":
 			fmt.Println("в разработке")
-		case "commits":
-			displayCommits()
 		case "version":
 			fmt.Println("opencd version:", VERSION)
 		default:
-			fmt.Println("неизвесная команда")
+			fmt.Print("неверная команда\n", MENU_TEXT)
 		}
 	} else {
-		fmt.Println("неизвесная команда")
+		fmt.Print("неверная команда\n", MENU_TEXT)
 	}
 }

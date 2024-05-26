@@ -9,15 +9,6 @@ import (
 	"strings"
 )
 
-// Выводит список всех коммитов.
-func displayCommits() {
-	run := exec.Command("bash", "-c", "git log --pretty=format:\"%h - %an, %ar : %s\"")
-	run.Stdout = os.Stdout
-	run.Stdin = os.Stdin
-	run.Stderr = os.Stderr
-	run.Run()
-}
-
 // Выполняет git fetch для удаленного репозитория.
 func gitFetch() {
 	run := exec.Command("bash", "-c", "git remote | git fetch")
