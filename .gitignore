@@ -2,3 +2,4 @@ opencd
 go.sum
 opencd.yaml
 docker-compose.*
+.obsidian
