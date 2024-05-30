@@ -27,7 +27,7 @@ ___
 ```bash
 wget https://github.com/PavelMilanov/opencd/releases/download/v0.1.0/opencd
 sudo mv opencd /usr/bin/
-sudo echo export PATH=$PATH:/usr/bin/gwg >> /etc/profile
+sudo echo export PATH=$PATH:/usr/bin/opencd >> /etc/profile
 ```
 
 - проверка установленной версии opencd:
