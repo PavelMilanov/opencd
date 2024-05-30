@@ -28,6 +28,7 @@ ___
 wget https://github.com/PavelMilanov/opencd/releases/download/v0.1.0/opencd
 sudo mv opencd /usr/bin/
 sudo echo export PATH=$PATH:/usr/bin/opencd >> /etc/profile
+sudo source /etc/profile
 ```
 
 - проверка установленной версии opencd:
