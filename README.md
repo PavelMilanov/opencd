@@ -19,3 +19,19 @@ ___
 - анализирует изменения удаленного и локального репозитория с помощью git;
 - анализирует файл конфигурации docker-compose;
 - автоматизирует сборку и обновление ваших компонентов docker-compose на основе изменений git.
+
+## установка
+
+- выполнить последовательно следующие команды:
+
+```bash
+wget https://github.com/PavelMilanov/opencd/releases/download/v0.1.0/opencd
+sudo mv opencd /usr/bin/
+sudo echo export PATH=$PATH:/usr/bin/gwg >> /etc/profile
+```
+
+- проверка установленной версии opencd:
+
+```bash
+opencd version
+```
