@@ -32,8 +32,10 @@ func main() {
 			fmt.Println("в разработке")
 		case "version":
 			fmt.Println("opencd version:", VERSION)
+		case "help":
+			fmt.Print(MENU_TEXT)
 		default:
-			fmt.Print("неверная команда\n", MENU_TEXT)
+			fmt.Println("неверная команда")
 		}
 	} else {
 		fmt.Print("неверная команда\n", MENU_TEXT)
