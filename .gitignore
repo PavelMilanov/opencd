@@ -3,3 +3,4 @@ go.sum
 opencd.yaml
 docker-compose.*
 .obsidian
+.DS_Store

@@ -25,10 +25,9 @@ ___
 - выполнить последовательно следующие команды:
 
 ```bash
-wget https://github.com/PavelMilanov/opencd/releases/download/v0.1.0/opencd
-sudo mv opencd /usr/bin/
-sudo echo export PATH=$PATH:/usr/bin/opencd >> /etc/profile
-sudo source /etc/profile
+wget https://github.com/PavelMilanov/opencd/releases/download/v0.1.1/opencd
+wget https://github.com/PavelMilanov/opencd/releases/download/install.sh
+sudo sh ./install.sh
 ```
 
 - проверка установленной версии opencd:
@@ -36,3 +35,13 @@ sudo source /etc/profile
 ```bash
 opencd version
 ```
+
+## использование
+
+- обновить проект:
+
+```bash
+opencd deploy
+```
+
+![Пример сборки](docs/images/deploy.png)
