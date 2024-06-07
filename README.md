@@ -25,8 +25,7 @@ ___
 - выполнить последовательно следующие команды:
 
 ```bash
-wget https://github.com/PavelMilanov/opencd/releases/download/v0.1.1/opencd
-wget https://github.com/PavelMilanov/opencd/releases/download/install.sh
+wget https://github.com/PavelMilanov/opencd/releases/download/v0.1.1/install.sh
 sudo sh ./install.sh
 ```
 
