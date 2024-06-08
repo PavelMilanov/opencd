@@ -29,7 +29,7 @@ func main() {
 				fmt.Println(err)
 				os.Exit(1)
 			}
-			fmt.Println("в разработке")
+			return
 		case "version":
 			fmt.Println("opencd version:", VERSION)
 		case "help":

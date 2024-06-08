@@ -99,25 +99,33 @@ func gitMerge(localBranch, deployBranch string) {
 // Производит git fetch, git merge, docker build, docker up исходя из изменений в коммитах.
 // Собирает и запускает сервисы в указанном файле docker-compose, где обновились файлы.
 func deploy(config Environments) {
-	PULL_UPDATE.Add(1)
+	SUCCESSBAR.Describe("[cyan][1/5][reset] Анализ изменений проекта...")
 	gitFetch()
 	changes := gitDiff(config.Local, config.Remote)
 	services := parseDockerCompose(config.Docker)
 	updateServices := analuzeChanges(services, changes)
+	SUCCESSBAR.Add(10)
 	if len(updateServices) == 0 {
-		fmt.Println("Изменений не обнаружено")
+		SUCCESSBAR.Describe("[cyan][5/5][reset] Изменений не обнаружено...")
+		SUCCESSBAR.Finish()
 		os.Exit(0)
 	}
-	fmt.Println("Обнаружены изменения в:")
+	barListName := []string{}
 	for _, service := range updateServices {
-		text := fmt.Sprintf(" - %s ", service.Name)
-		fmt.Println(text)
+		barListName = append(barListName, service.Name)
 	}
-	MERGE_UPDATE.Add(1)
+	barDescription := fmt.Sprintf("[cyan][2/5][reset] Обновление проекта для %s", strings.Join(barListName, " "))
+	SUCCESSBAR.Describe(barDescription)
 	branch := createDeployBranch(config.Remote)
 	gitMerge(config.Local, branch)
 	deleteDeployBranch(branch)
-	BUILD_UPDATE.Add(1)
+	SUCCESSBAR.Add(10)
+	SUCCESSBAR.Describe("[cyan][3/5][reset] Сборка новых образов docker...")
 	buildServices := buildDockerCompose(updateServices, config.Docker)
+	SUCCESSBAR.Add(10)
+	SUCCESSBAR.Describe("[cyan][4/5][reset] Обновление измененных образов docker...")
 	upDockerCompose(buildServices, config.Docker)
+	SUCCESSBAR.Add(10)
+	SUCCESSBAR.Describe("[cyan][5/5][reset] Обновление прошло успешно")
+	SUCCESSBAR.Finish()
 }

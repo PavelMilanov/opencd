@@ -35,6 +35,8 @@ sudo sh ./install.sh
 opencd version
 ```
 
+- добавить в корень проекта файл [opencd.yaml](opencd.yaml.template)
+
 ## использование
 
 - обновить проект:
