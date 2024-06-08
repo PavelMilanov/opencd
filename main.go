@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 )
@@ -22,16 +23,12 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			deploy(config.Environments[0])
-		case "rollback":
-			err := checkComponents()
-			if err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-			return
+			deployCommand := flag.NewFlagSet("deploy", flag.ExitOnError)
+			stage := deployCommand.String("s", "merge", "запускает обновление проекта;\nдопустимые флаги [merge, docker];\nmerge - полный цикл сборки;\ndocker - сборка и запуск контейнеров в текущем состоянии.\n")
+			deployCommand.Parse(os.Args[2:])
+			deploy(config.Environments[0], *stage)
 		case "version":
-			fmt.Println("opencd version:", VERSION)
+			version()
 		case "help":
 			fmt.Print(MENU_TEXT)
 		default:
