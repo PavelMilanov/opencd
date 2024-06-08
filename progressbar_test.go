@@ -1,25 +1,18 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 	"time"
 )
 
 func TestBar(t *testing.T) {
-	go PULL_UPDATE.Add(1)
-	func() {
-		fmt.Println("testing bar")
-		time.Sleep(2000 * time.Millisecond)
-	}()
-	go MERGE_UPDATE.Add(1)
-	func() {
-		fmt.Println("testing bar2")
-		time.Sleep(2000 * time.Millisecond)
-	}()
-	go BUILD_UPDATE.Add(1)
-	func() {
-		fmt.Println("testing bar3")
-		time.Sleep(2000 * time.Millisecond)
-	}()
+	PROGRESSBAR.Describe("[cyan][1/3][reset] Подготовка к обновлению компонентов...")
+	PROGRESSBAR.Add(10)
+	time.Sleep(1 * time.Second)
+	PROGRESSBAR.Describe("[cyan][2/3][reset] Обновление прошло успешно")
+	PROGRESSBAR.Add(10)
+	PROGRESSBAR.Describe("[cyan][3/3][reset] Обновление прошло успешно 1")
+	PROGRESSBAR.Add(20)
+	time.Sleep(1 * time.Second)
+	errorbar(40)
 }

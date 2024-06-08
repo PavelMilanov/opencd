@@ -31,15 +31,17 @@ func formatChankData(chank string) (string, string) {
 }
 
 // Выполняет парсинг файла docker-compose. Возврашает список сервисов, у которых собираемый локально образ.
-func parseDockerCompose(filename string) []Service {
+func parseDockerCompose(filename string) ([]Service, error) {
 	file, err := os.ReadFile(filename)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return nil, err
 	}
 	var conf DockerCompose
 	err = yaml.Unmarshal(file, &conf)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return nil, err
 	}
 	data := fmt.Sprintf("%v", conf.Services)
 
@@ -60,12 +62,12 @@ func parseDockerCompose(filename string) []Service {
 			services = append(services, Service{Name: name, Build: build})
 		}
 	}
-	return services
+	return services, nil
 }
 
 // Запускает сборку сервисов из docker-compose файла, у которых изменился код.
 // Возвращает список названий сервисов для сборки.
-func buildDockerCompose(services []Service, composeFile string) []string {
+func buildDockerCompose(services []Service, composeFile string) ([]string, error) {
 	serviceNameList := []string{}
 	for _, s := range services {
 		serviceNameList = append(serviceNameList, s.Name)
@@ -73,18 +75,25 @@ func buildDockerCompose(services []Service, composeFile string) []string {
 	command := fmt.Sprintf("docker compose -f %s build %s", composeFile, strings.Join(serviceNameList, " "))
 	run := exec.Command("bash", "-c", command)
 	run.Stdout = os.Stdout
-	run.Stdin = os.Stdin
 	run.Stderr = os.Stderr
-	run.Run()
-	return serviceNameList
+	err := run.Run()
+	if err != nil {
+		fmt.Println(err)
+		return []string{}, err
+	}
+	return serviceNameList, nil
 }
 
 // Запускает сервисы docker-compose, переданные в параметры функции.
-func upDockerCompose(services []string, composeFile string) {
+func upDockerCompose(services []string, composeFile string) error {
 	command := fmt.Sprintf("docker compose -f %s up -d %s", composeFile, strings.Join(services, " "))
 	run := exec.Command("bash", "-c", command)
 	run.Stdout = os.Stdout
-	run.Stdin = os.Stdin
 	run.Stderr = os.Stderr
-	run.Run()
+	err := run.Run()
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
 }

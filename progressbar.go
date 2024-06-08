@@ -1,12 +1,17 @@
 package main
 
-import "github.com/schollz/progressbar/v3"
+import (
+	"fmt"
+	"os"
 
-var PULL_UPDATE = progressbar.NewOptions(-1,
+	"github.com/schollz/progressbar/v3"
+)
+
+var PROGRESSBAR = progressbar.NewOptions(100,
 	progressbar.OptionEnableColorCodes(true),
-	progressbar.OptionSetElapsedTime(false),
+	progressbar.OptionSetElapsedTime(true),
+	progressbar.OptionShowIts(),
 	progressbar.OptionSetWidth(20),
-	progressbar.OptionSetDescription("[cyan][1/3][reset] Подготовка к обновлению компонентов...\n"),
 	progressbar.OptionSetTheme(progressbar.Theme{
 		Saucer:        "[green]=[reset]",
 		SaucerHead:    "[green]>[reset]",
@@ -15,41 +20,27 @@ var PULL_UPDATE = progressbar.NewOptions(-1,
 		BarEnd:        "]",
 	}))
 
-// var STAGE2 = progressbar.NewOptions(-1,
-// 	progressbar.OptionEnableColorCodes(true),
-// 	progressbar.OptionSetElapsedTime(false),
-// 	progressbar.OptionSetWidth(20),
-// 	progressbar.OptionSetDescription("[cyan][2/4][reset] Анализ конфигурации docker...\n"),
-// 	progressbar.OptionSetTheme(progressbar.Theme{
-// 		Saucer:        "[green]=[reset]",
-// 		SaucerHead:    "[green]>[reset]",
-// 		SaucerPadding: " ",
-// 		BarStart:      "[",
-// 		BarEnd:        "]",
-// 	}))
-
-var MERGE_UPDATE = progressbar.NewOptions(-1,
+var FAILE = progressbar.NewOptions(100,
 	progressbar.OptionEnableColorCodes(true),
-	progressbar.OptionSetElapsedTime(false),
+	progressbar.OptionSetElapsedTime(true),
+	progressbar.OptionShowIts(),
 	progressbar.OptionSetWidth(20),
-	progressbar.OptionSetDescription("[cyan][2/3][reset] Слияние веток...\n"),
 	progressbar.OptionSetTheme(progressbar.Theme{
-		Saucer:        "[green]=[reset]",
-		SaucerHead:    "[green]>[reset]",
+		Saucer:        "[red]=[red][reset]",
+		SaucerHead:    "[red]>[red][reset]",
 		SaucerPadding: " ",
 		BarStart:      "[",
 		BarEnd:        "]",
 	}))
 
-var BUILD_UPDATE = progressbar.NewOptions(-1,
-	progressbar.OptionEnableColorCodes(true),
-	progressbar.OptionSetElapsedTime(false),
-	progressbar.OptionSetWidth(20),
-	progressbar.OptionSetDescription("[cyan][3/3][reset] Обновление компонентов...\n"),
-	progressbar.OptionSetTheme(progressbar.Theme{
-		Saucer:        "[green]=[reset]",
-		SaucerHead:    "[green]>[reset]",
-		SaucerPadding: " ",
-		BarStart:      "[",
-		BarEnd:        "]",
-	}))
+// изменяет тему прогрессбара для вывода ошибок.
+// Значение state должно быть кратйно 10.
+func errorbar(state int) {
+	idx := state / 10
+	text := fmt.Sprintf("[cyan][%d/5][reset] Ошибка", idx)
+	PROGRESSBAR = FAILE
+	PROGRESSBAR.Describe(text)
+	PROGRESSBAR.Add(state)
+	PROGRESSBAR.Exit()
+	os.Exit(1)
+}

@@ -36,3 +36,10 @@ func TestCheckComponents(t *testing.T) {
 		t.Errorf("%s", err)
 	}
 }
+
+func TestCmd(t *testing.T) {
+	err := cmd("ls")
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+}
