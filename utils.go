@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"regexp"
 
 	"gopkg.in/yaml.v3"
@@ -98,4 +99,17 @@ func parsePathFile(filepath string) (string, error) {
 			return "", errors.New("файл не найден: " + filepath)
 		}
 	}
+}
+
+// Выполняет указанную Unix-команду
+func cmd(command string) error {
+	run := exec.Command("bash", "-c", command)
+	run.Stdout = os.Stdout
+	run.Stderr = os.Stderr
+	err := run.Run()
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
 }

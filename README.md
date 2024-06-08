@@ -25,7 +25,7 @@ ___
 - выполнить последовательно следующие команды:
 
 ```bash
-wget https://github.com/PavelMilanov/opencd/releases/download/v0.1.1/install.sh
+wget https://github.com/PavelMilanov/opencd/releases/download/v0.2.0/install.sh
 sudo sh ./install.sh
 ```
 
@@ -33,6 +33,9 @@ sudo sh ./install.sh
 
 ```bash
 opencd version
+opencd version 0.2.0
+git version 2.45.0
+Docker Compose version v2.27.0-desktop.2
 ```
 
 - добавить в корень проекта файл [opencd.yaml](opencd.yaml.template)
@@ -45,4 +48,18 @@ opencd version
 opencd deploy
 ```
 
-![Пример сборки](docs/images/deploy.png)
+- подсказки:
+
+```bash
+opencd help
+
+opencd deploy [flag]            - произвести обновление репозитория;
+opencd version                  - показать версию;
+
+opencd deploy -s=[merge,docker] - запуск обновления с параметрами. Подробнее - opencd deploy -h.
+
+```
+
+## пример использования
+
+![Пример сборки](docs/video/opencd.mp4)

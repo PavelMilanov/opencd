@@ -6,17 +6,25 @@ import (
 )
 
 func TestGitDiff(t *testing.T) {
-	data := gitDiff("origin/dev", "dev2")
+	data, err := gitDiff("origin/dev", "dev2")
+	if err != nil {
+		t.Errorf("%s", err)
+	}
 	fmt.Println(data)
 }
-
 func TestAnaluzeChanges(t *testing.T) {
 	config, err := readOpencdFile()
 	if err != nil {
-		panic(err)
+		t.Errorf("%s", err)
 	}
-	changes := gitDiff(config.Environments[0].Local, config.Environments[0].Remote)
-	services := parseDockerCompose(config.Environments[0].Docker)
+	changes, err := gitDiff(config.Environments[0].Local, config.Environments[0].Remote)
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+	services, err := parseDockerCompose(config.Environments[0].Docker)
+	if err != nil {
+		t.Errorf("%s", err)
+	}
 	data := analuzeChanges(services, changes)
 	fmt.Println(data)
 }
@@ -27,12 +35,4 @@ func TestCreateDeployBranch(t *testing.T) {
 
 func TestGitMerge(t *testing.T) {
 	gitMerge("dev3", "deploy-702996a")
-}
-
-func TestDeploy(t *testing.T) {
-	config, err := readOpencdFile()
-	if err != nil {
-		panic(err)
-	}
-	deploy(config.Environments[0])
 }

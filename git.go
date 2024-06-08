@@ -10,21 +10,25 @@ import (
 )
 
 // Выполняет git fetch для удаленного репозитория.
-func gitFetch() {
+func gitFetch() error {
 	run := exec.Command("bash", "-c", "git remote | git fetch")
 	run.Stdout = os.Stdout
-	run.Stdin = os.Stdin
 	run.Stderr = os.Stderr
-	run.Run()
+	err := run.Run()
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
 }
 
 // Проверяет изменения в ветках репозитория и возвращает директории, где были изменения.
-func gitDiff(localBranch string, remoteBranch string) []string {
+func gitDiff(localBranch string, remoteBranch string) ([]string, error) {
 	command := fmt.Sprintf("git diff %s %s", remoteBranch, localBranch)
 	diff, err := exec.Command("bash", "-c", command).Output()
 	if err != nil {
-		fmt.Println("error from git diff: ", err)
-		panic(err)
+		fmt.Println(err)
+		return nil, err
 	}
 	changes := []string{}
 	buffer := bytes.NewBuffer(diff)
@@ -40,7 +44,7 @@ func gitDiff(localBranch string, remoteBranch string) []string {
 			changes = append(changes, commitChange)
 		}
 	}
-	return changes
+	return changes, nil
 }
 
 // Возвращает список сервисов docker-compose, для которых былм изменения в полученных коммитах.
@@ -58,74 +62,47 @@ func analuzeChanges(services []Service, commits []string) []Service {
 }
 
 // Создает отдельную ветку git для применения изменений, возвращает название этой ветки.
-func createDeployBranch(remoteBranch string) string {
+func createDeployBranch(remoteBranch string) (string, error) {
 	command := fmt.Sprintf("git log %s | head  -1", remoteBranch)
 	commitsha, err := exec.Command("bash", "-c", command).Output()
 	if err != nil {
-		fmt.Println("Ошибка при работе с удаленной веткой")
-		panic(err)
+		fmt.Println(err)
+		return "", err
 	}
 	shortSha := strings.Split(string(commitsha), " ")[1][:7] // commit 11e00c3b19f88ec7602c4d115871113e49f63e07 => 11e00c3
 	deployBranch := "deploy" + "-" + shortSha
 	command2 := fmt.Sprintf("git checkout -b %s && git merge %s", deployBranch, remoteBranch) // переключение на ветку деплоя и применение изменений
 	run := exec.Command("bash", "-c", command2)
 	run.Stdout = os.Stdout
-	run.Stdin = os.Stdin
 	run.Stderr = os.Stderr
 	run.Run()
-	return deployBranch
+	return deployBranch, nil
 }
 
 // Удаляет ранее созданную временную ветку для деплоя.
-func deleteDeployBranch(branch string) {
+func deleteDeployBranch(branch string) error {
 	command := fmt.Sprintf("git branch -D %s", branch)
 	run := exec.Command("bash", "-c", command)
 	run.Stdout = os.Stdout
-	run.Stdin = os.Stdin
 	run.Stderr = os.Stderr
-	run.Run()
+	err := run.Run()
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
 }
 
 // Производит git merge для рабочей ветки из ветки, созданной в <createDeployBranch>. Если нет ошибок, временная ветка будет удалена.
-func gitMerge(localBranch, deployBranch string) {
+func gitMerge(localBranch, deployBranch string) error {
 	command := fmt.Sprintf("git checkout %s && git merge %s", localBranch, deployBranch)
 	run := exec.Command("bash", "-c", command)
 	run.Stdout = os.Stdout
-	run.Stdin = os.Stdin
 	run.Stderr = os.Stderr
-	run.Run()
-}
-
-// Производит git fetch, git merge, docker build, docker up исходя из изменений в коммитах.
-// Собирает и запускает сервисы в указанном файле docker-compose, где обновились файлы.
-func deploy(config Environments) {
-	SUCCESSBAR.Describe("[cyan][1/5][reset] Анализ изменений проекта...")
-	gitFetch()
-	changes := gitDiff(config.Local, config.Remote)
-	services := parseDockerCompose(config.Docker)
-	updateServices := analuzeChanges(services, changes)
-	SUCCESSBAR.Add(10)
-	if len(updateServices) == 0 {
-		SUCCESSBAR.Describe("[cyan][5/5][reset] Изменений не обнаружено...")
-		SUCCESSBAR.Finish()
-		os.Exit(0)
+	err := run.Run()
+	if err != nil {
+		fmt.Println(err)
+		return err
 	}
-	barListName := []string{}
-	for _, service := range updateServices {
-		barListName = append(barListName, service.Name)
-	}
-	barDescription := fmt.Sprintf("[cyan][2/5][reset] Обновление проекта для %s", strings.Join(barListName, " "))
-	SUCCESSBAR.Describe(barDescription)
-	branch := createDeployBranch(config.Remote)
-	gitMerge(config.Local, branch)
-	deleteDeployBranch(branch)
-	SUCCESSBAR.Add(10)
-	SUCCESSBAR.Describe("[cyan][3/5][reset] Сборка новых образов docker...")
-	buildServices := buildDockerCompose(updateServices, config.Docker)
-	SUCCESSBAR.Add(10)
-	SUCCESSBAR.Describe("[cyan][4/5][reset] Обновление измененных образов docker...")
-	upDockerCompose(buildServices, config.Docker)
-	SUCCESSBAR.Add(10)
-	SUCCESSBAR.Describe("[cyan][5/5][reset] Обновление прошло успешно")
-	SUCCESSBAR.Finish()
+	return nil
 }
