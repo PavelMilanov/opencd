@@ -9,3 +9,7 @@ func TestDeploy(t *testing.T) {
 	}
 	deploy(config.Environments[0], "merge")
 }
+
+func TestDockerPrune(t *testing.T) {
+	dockerPrnune()
+}
