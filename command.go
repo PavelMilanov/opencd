@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
+	"sync"
 )
 
 // Производит git fetch, git merge, docker build, docker up исходя из изменений в коммитах.
@@ -87,11 +89,13 @@ func deploy(config Environments, stage string) {
 		}
 		PROGRESSBAR.Describe("[cyan][3/3][reset] Обновление прошло успешно")
 		PROGRESSBAR.Finish()
+		dockerPrnune()
 	default:
 		fmt.Println("флаг не распознан")
 	}
 }
 
+// Вывод информации о версии используемого ПО
 func version() {
 	fmt.Println("opencd version", VERSION)
 	err := cmd("git version")
@@ -102,4 +106,27 @@ func version() {
 	if err != nil {
 		fmt.Println(err)
 	}
+}
+
+// Очищает кеш docker
+func dockerPrnune() {
+	docker := [3]string{"docker container  rm $(docker ps -a -f status=exited -q)", "docker image rm $(docker image ls -f dangling=true -q)", "docker volume rm $(docker volume ls -f dangling=true -q)"}
+
+	var wg sync.WaitGroup
+	wg.Add(3)
+
+	worker := func(command string) {
+		defer wg.Done()
+		cmd := exec.Command("bash", "-c", command)
+		cmd.Stdout = os.Stdout
+		err := cmd.Run()
+		if err != nil {
+			return
+		}
+	}
+
+	for _, work := range docker {
+		go worker(work)
+	}
+	wg.Wait()
 }
