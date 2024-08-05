@@ -11,6 +11,9 @@ import (
 // Производит git fetch, git merge, docker build, docker up исходя из изменений в коммитах.
 // Собирает и запускает сервисы в указанном файле docker-compose, где обновились файлы.
 func deploy(config Environments, stage string) {
+	info := fmt.Sprintf("Запуск обновления для окружения %s", config.Name)
+	fmt.Println(info)
+	fmt.Println()
 	switch stage {
 	case "merge":
 		PROGRESSBAR.Describe("[cyan][1/5][reset] Анализ изменений проекта...")
@@ -34,7 +37,7 @@ func deploy(config Environments, stage string) {
 		for _, service := range updateServices {
 			barListName = append(barListName, service.Name)
 		}
-		PROGRESSBAR.Describe("[cyan][2/5][reset] Обновление проекта\n")
+		PROGRESSBAR.Describe("[cyan][2/5][reset] Обновление проекта")
 		branch, err := createDeployBranch(config.Remote)
 		if err != nil {
 			return

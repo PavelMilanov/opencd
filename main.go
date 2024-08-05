@@ -25,8 +25,16 @@ func main() {
 			}
 			deployCommand := flag.NewFlagSet("deploy", flag.ExitOnError)
 			stage := deployCommand.String("s", "merge", "запускает обновление проекта;\nдопустимые флаги [merge, docker];\nmerge - полный цикл сборки;\ndocker - сборка и запуск контейнеров в текущем состоянии.\n")
+			env := deployCommand.String("e", "", "название окружения для обновления проекта;\nпараметр opencd.name.")
 			deployCommand.Parse(os.Args[2:])
-			deploy(config.Environments[0], *stage)
+			for _, item := range config.Environments {
+				if item.Name == *env {
+					deploy(item, *stage)
+					os.Exit(0)
+				}
+			}
+			fmt.Println("не указано окружение для обновления проекта. Подробнее - opencd help")
+			os.Exit(1)
 		case "version":
 			version()
 		case "help":
