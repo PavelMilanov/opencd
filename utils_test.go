@@ -11,7 +11,9 @@ func TestReadOpencdFile(t *testing.T) {
 	if err != nil {
 		t.Errorf("%s", err)
 	}
-	fmt.Println(data)
+	for i, envs := range data.Environments {
+		fmt.Println(i, envs.Name)
+	}
 }
 
 func TestParsePathFile(t *testing.T) {
