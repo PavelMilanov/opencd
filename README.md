@@ -27,7 +27,7 @@ ___
 - выполнить последовательно следующие команды:
 
 ```bash
-wget https://github.com/PavelMilanov/opencd/releases/download/v0.2.0/install.sh
+wget https://github.com/PavelMilanov/opencd/releases/download/v0.2.1/install.sh
 sudo sh ./install.sh
 ```
 
@@ -35,7 +35,7 @@ sudo sh ./install.sh
 
 ```bash
 opencd version
-opencd version 0.2.0
+opencd version 0.2.1
 git version 2.45.0
 Docker Compose version v2.27.0-desktop.2
 ```
@@ -55,10 +55,10 @@ opencd deploy
 ```bash
 opencd help
 
-opencd deploy [flag]            - произвести обновление репозитория;
-opencd version                  - показать версию;
+opencd deploy -s=[flag] -e=[flag] - произвести обновление репозитория;
+opencd version                    - показать версию;
 
-opencd deploy -s=[merge,docker] - запуск обновления с параметрами. Подробнее - opencd deploy -h.
+opencd deploy -s=[merge,docker] -e=[opencd.name] - запуск обновления с параметрами. Подробнее - opencd deploy -h.
 
 ```
 
