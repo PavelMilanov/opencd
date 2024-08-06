@@ -13,7 +13,6 @@ import (
 func deploy(config Environments, stage string) {
 	info := fmt.Sprintf("Запуск обновления для окружения %s", config.Name)
 	fmt.Println(info)
-	fmt.Println()
 	switch stage {
 	case "merge":
 		PROGRESSBAR.Describe("[cyan][1/5][reset] Анализ изменений проекта...")
