@@ -6,95 +6,94 @@ import (
 	"os/exec"
 	"strings"
 	"sync"
+
+	"github.com/fatih/color"
 )
 
 // Производит git fetch, git merge, docker build, docker up исходя из изменений в коммитах.
 // Собирает и запускает сервисы в указанном файле docker-compose, где обновились файлы.
 func deploy(config Environments, stage string) {
+	var STEPS = []string{"[1/3] Анализ изменений проекта", "[2/3] Сборка проекта", "[3/3] Обновление проекта"}
 	info := fmt.Sprintf("Запуск обновления для окружения %s", config.Name)
-	fmt.Println(info)
+	color.Green(info)
 	switch stage {
 	case "merge":
-		PROGRESSBAR.Describe("[cyan][1/5][reset] Анализ изменений проекта...")
-		gitFetch()
+		color.Cyan(STEPS[0])
+		if err := gitFetch(); err != nil {
+			color.Red("Не найдена удаленная ветка")
+			os.Exit(0)
+		}
 		changes, err := gitDiff(config.Local, config.Remote)
 		if err != nil {
-			errorbar(10)
+			color.Red("Ошибка при анализе изменений удаленной ветки")
+			os.Exit(0)
 		}
 		services, err := parseDockerCompose(config.Docker)
 		if err != nil {
-			errorbar(10)
+			color.Red("Ошибка при чтении файла docker compose")
+			os.Exit(0)
 		}
 		updateServices := analuzeChanges(services, changes)
-		PROGRESSBAR.Add(10)
 		if len(updateServices) == 0 {
-			PROGRESSBAR.Describe("[cyan][5/5][reset] Изменений не обнаружено...")
-			PROGRESSBAR.Finish()
+			color.Red("Изменений не обнаружено")
 			os.Exit(0)
 		}
 		barListName := []string{}
 		for _, service := range updateServices {
 			barListName = append(barListName, service.Name)
 		}
-		PROGRESSBAR.Describe("[cyan][2/5][reset] Обновление проекта")
+		color.Cyan("Обновление проекта")
 		branch, err := createDeployBranch(config.Remote)
 		if err != nil {
 			return
 		}
 		err = gitMerge(config.Local, branch)
 		if err != nil {
-			errorbar(20)
+			fmt.Println(err)
 		}
 		err = deleteDeployBranch(branch)
 		if err != nil {
-			errorbar(20)
+			fmt.Println(err)
 		}
-		PROGRESSBAR.Add(10)
-		buildDescription := fmt.Sprintf("[cyan][3/5][reset] Сборка новых образов docker %s", strings.Join(barListName, " "))
-		PROGRESSBAR.Describe(buildDescription)
+		color.Cyan(STEPS[1])
 		buildServices, err := buildDockerCompose(updateServices, config.Docker)
 		if err != nil {
-			print(err, "Ошибка")
-			errorbar(30)
+			fmt.Println(err)
 		}
-		PROGRESSBAR.Add(10)
-		upDescription := fmt.Sprintf("[cyan][4/5][reset] Обновление сервисов %s", strings.Join(barListName, " "))
-		PROGRESSBAR.Describe(upDescription)
+		color.Cyan(STEPS[2])
+		upDescription := fmt.Sprintf("Обновление сервисов %s", strings.Join(barListName, " "))
+		fmt.Println(upDescription)
 		err = upDockerCompose(buildServices, config.Docker)
 		if err != nil {
-			errorbar(40)
+			fmt.Println(err)
 		}
-		PROGRESSBAR.Describe("[cyan][5/5][reset] Обновление прошло успешно")
-		PROGRESSBAR.Finish()
+		color.Green("Обновление прошло успешно")
 	case "docker":
 		services, err := parseDockerCompose(config.Docker)
 		if err != nil {
-			errorbar(10)
+			fmt.Println(err)
 		}
 		barListName := []string{}
 		for _, service := range services {
 			barListName = append(barListName, service.Name)
 		}
-		buildDescription := fmt.Sprintf("[cyan][1/3][reset] Сборка новых образов docker %s", strings.Join(barListName, " "))
-		PROGRESSBAR.Describe(buildDescription)
+		color.Cyan(STEPS[1])
 		buildServices, err := buildDockerCompose(services, config.Docker)
 		if err != nil {
-			errorbar(10)
+			fmt.Println(err)
 		}
-		fmt.Println(buildServices)
-		PROGRESSBAR.Add(50)
-		upDescription := fmt.Sprintf("[cyan][2/3][reset] Обновление сервисов %s", strings.Join(barListName, " "))
-		PROGRESSBAR.Describe(upDescription)
+		color.Cyan(STEPS[2])
+		upDescription := fmt.Sprintf("Обновление сервисов %s", strings.Join(barListName, " "))
+		fmt.Println(upDescription)
 		err = upDockerCompose(buildServices, config.Docker)
 		if err != nil {
-			errorbar(50)
+			fmt.Println(err)
 		}
-		PROGRESSBAR.Describe("[cyan][3/3][reset] Обновление прошло успешно")
-		PROGRESSBAR.Finish()
-		dockerPrnune()
+		color.Green("Обновление прошло успешно")
 	default:
 		fmt.Println("флаг не распознан")
 	}
+	dockerPrnune()
 }
 
 // Вывод информации о версии используемого ПО

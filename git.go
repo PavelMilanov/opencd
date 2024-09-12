@@ -16,7 +16,6 @@ func gitFetch() error {
 	run.Stderr = os.Stderr
 	err := run.Run()
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	return nil
@@ -27,7 +26,6 @@ func gitDiff(localBranch string, remoteBranch string) ([]string, error) {
 	command := fmt.Sprintf("git diff %s %s", remoteBranch, localBranch)
 	diff, err := exec.Command("bash", "-c", command).Output()
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	changes := []string{}
