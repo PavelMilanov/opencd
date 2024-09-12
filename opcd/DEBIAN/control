@@ -1,8 +1,8 @@
 Package: opencd
-Version: 0.2.1
+Version: 0.2.2
 Section: unknown
 Priority: optional
-Depends: 
+Recommends: git
 Architecture: amd64
 Essential: no
 Installed-Size: 3872

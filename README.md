@@ -27,8 +27,8 @@ ___
 - выполнить последовательно следующие команды:
 
 ```bash
-wget https://github.com/PavelMilanov/opencd/releases/download/v0.2.1/install.sh
-sudo sh ./install.sh
+wget https://github.com/PavelMilanov/opencd/releases/download/v0.2.1/opcd.deb
+sudo dpkg -i opcd.deb
 ```
 
 - проверка установленной версии opencd:

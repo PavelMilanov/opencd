@@ -1,4 +1,5 @@
 opencd
+opcd.deb
 go.sum
 opencd.yaml
 docker-compose.*
