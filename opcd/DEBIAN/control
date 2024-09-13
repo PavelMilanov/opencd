@@ -1,0 +1,10 @@
+Package: opencd
+Version: 0.2.2
+Section: unknown
+Priority: optional
+Recommends: git
+Architecture: amd64
+Essential: no
+Installed-Size: 3872
+Maintainer: milanov71@icloud.com
+Description: cli continuous delivery (CD) utility for docker-compose apps
