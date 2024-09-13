@@ -27,7 +27,7 @@ ___
 - выполнить последовательно следующие команды:
 
 ```bash
-wget https://github.com/PavelMilanov/opencd/releases/download/v0.2.1/opcd.deb
+wget https://github.com/PavelMilanov/opencd/releases/download/v0.2.2/opcd.deb
 sudo dpkg -i opcd.deb
 ```
 
@@ -35,7 +35,7 @@ sudo dpkg -i opcd.deb
 
 ```bash
 opencd version
-opencd version 0.2.1
+opencd version 0.2.2
 git version 2.45.0
 Docker Compose version v2.27.0-desktop.2
 ```
