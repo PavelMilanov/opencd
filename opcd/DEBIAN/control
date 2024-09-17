@@ -5,6 +5,6 @@ Priority: optional
 Recommends: git
 Architecture: amd64
 Essential: no
-Installed-Size: 3872
+Installed-Size: 3636
 Maintainer: milanov71@icloud.com
 Description: cli continuous delivery (CD) utility for docker-compose apps
