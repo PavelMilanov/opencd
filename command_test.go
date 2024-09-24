@@ -7,7 +7,7 @@ func TestDeploy(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	deploy(config.Environments[0], "merge")
+	deploy(config.Environments[0], config.Settings, "merge")
 }
 
 func TestDockerPrune(t *testing.T) {

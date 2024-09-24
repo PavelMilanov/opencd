@@ -27,15 +27,16 @@ ___
 - выполнить последовательно следующие команды:
 
 ```bash
-wget https://github.com/PavelMilanov/opencd/releases/download/v0.2.1/opcd.deb
-sudo dpkg -i opcd.deb
+wget https://github.com/PavelMilanov/opencd/releases/download/v0.2.3/install.sh
+sudo bash install ./install.sh
 ```
 
 - проверка установленной версии opencd:
 
 ```bash
 opencd version
-opencd version 0.2.1
+
+opencd version 0.2.3
 git version 2.45.0
 Docker Compose version v2.27.0-desktop.2
 ```
@@ -47,23 +48,27 @@ Docker Compose version v2.27.0-desktop.2
 - обновить проект:
 
 ```bash
-opencd deploy
+opencd deploy -e [environment] -s [stage]
 ```
 
-- подсказки:
+- помощь при обновлении проекта:
+
+```bash
+opencd deploy -h
+```
+
+- посмотреть версию:
+
+```bash
+opencd version
+```
+
+- посмотреть структуру команд:
 
 ```bash
 opencd help
-
-opencd deploy -s=[flag] -e=[flag] - произвести обновление репозитория;
-opencd version                    - показать версию;
-
-opencd deploy -s=[merge,docker] -e=[opencd.name] - запуск обновления с параметрами. Подробнее - opencd deploy -h.
-
 ```
 
-## пример использования
+## справочная информация
 
-[Демонстрация сборки](https://youtu.be/uPUxsMTAxRU)
-
-![Демонстрация сборки](docs/deploy.png)
+- краткое описание структуры [opencd.yaml](docs/opencd.yaml.manual)

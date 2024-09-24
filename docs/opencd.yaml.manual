@@ -1,0 +1,19 @@
+// Раздел с описанием окружений
+environments:
+  - test:
+    name: test
+    local: dev
+    remote: origin/dev
+    docker: docker-compose.dev.yaml
+  
+  - production:
+    name: production
+    local: main
+    remote: origin/main
+    docker: docker-compose.yaml
+
+
+// Раздел с описанием настроек при работе opencd
+settings:
+  cache:
+    delete: true  - [true, false] // запуск очистки мусора docker после окончания сборки проекта. Чистит остановленные контейнеры, образы без тегов и неиспользуемые вольюмы

@@ -21,7 +21,8 @@ func main() {
 			}
 			config, err := readOpencdFile()
 			if err != nil {
-				panic(err)
+				fmt.Println(err)
+				os.Exit(1)
 			}
 			deployCommand := flag.NewFlagSet("deploy", flag.ExitOnError)
 			stage := deployCommand.String("s", "merge", "запускает обновление проекта;\nдопустимые флаги [merge, docker];\nmerge - полный цикл сборки;\ndocker - сборка и запуск контейнеров в текущем состоянии.\n")
@@ -29,7 +30,7 @@ func main() {
 			deployCommand.Parse(os.Args[2:])
 			for _, item := range config.Environments {
 				if item.Name == *env {
-					deploy(item, *stage)
+					deploy(item, config.Settings, *stage)
 					os.Exit(0)
 				}
 			}
