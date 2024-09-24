@@ -47,7 +47,7 @@ Docker Compose version v2.27.0-desktop.2
 - обновить проект:
 
 ```bash
-opencd deploy
+opencd deploy -e [environment]
 ```
 
 - подсказки:
