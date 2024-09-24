@@ -7,3 +7,4 @@ build:
 
 install:
 	GOOS=linux GOARCH=amd64 go install -ldflags="-X 'main.VERSION=${version}'"
+	cp ~/go/bin/linux_amd64/opencd .
