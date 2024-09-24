@@ -71,4 +71,4 @@ opencd help
 
 ## справочная информация
 
-- краткое описание структуры [opencd.yaml](opencd.yaml.manual)
+- краткое описание структуры [opencd.yaml](docs/opencd.yaml.manual)
