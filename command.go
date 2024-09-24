@@ -12,8 +12,13 @@ import (
 
 // Производит git fetch, git merge, docker build, docker up исходя из изменений в коммитах.
 // Собирает и запускает сервисы в указанном файле docker-compose, где обновились файлы.
-func deploy(config Environments, stage string) {
-	var STEPS = []string{"[1/4] Анализ изменений проекта", "[2/4] Сборка проекта", "[3/4] Обновление проекта", "[4/4] Очистка кеша docker"}
+func deploy(config Environments, settings Settings, stage string) {
+	var STEPS = []string{}
+	if settings.Cache.Delete {
+		STEPS = STEPS_WITH_CACHE
+	} else {
+		STEPS = STEPS_WITHOUT_CACHE
+	}
 	info := fmt.Sprintf("Запуск обновления для окружения %s", config.Name)
 	color.Green(info)
 	switch stage {
@@ -93,8 +98,10 @@ func deploy(config Environments, stage string) {
 	default:
 		fmt.Println("флаг не распознан")
 	}
-	color.Cyan(STEPS[3])
-	dockerPrnune()
+	if settings.Cache.Delete {
+		color.Cyan(STEPS[3])
+		dockerPrnune()
+	}
 }
 
 // Вывод информации о версии используемого ПО

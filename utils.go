@@ -13,7 +13,10 @@ import (
 // Структуры для работы с файлом opencd.yaml.
 type OpenCd struct {
 	Environments []Environments `yaml:"environments"`
+	Settings     Settings       `yaml:"settings"`
 }
+
+// Раздел environments: в файле opencd.yaml
 type Environments struct {
 	Name   string `yaml:"name"`
 	Local  string `yaml:"local"`
@@ -21,11 +24,17 @@ type Environments struct {
 	Docker string `yaml:"docker"`
 }
 
+// Раздел environments: в файле opencd.yaml
+type Settings struct {
+	Cache struct {
+		Delete bool `yaml:"delete"`
+	}
+}
+
 // Возвращает текущую директорию.
 func getCurrentDirectory() string {
 	pwd, err := os.Getwd()
 	if err != nil {
-		fmt.Println(err)
 		panic(err)
 	}
 	return pwd
@@ -40,7 +49,7 @@ func checkComponents() error {
 	}
 	config, err := readOpencdFile()
 	if err != nil {
-		panic(err)
+		return err
 	}
 	for _, data := range config.Environments {
 		file := pwd + "/" + data.Docker
@@ -56,11 +65,11 @@ func readOpencdFile() (OpenCd, error) {
 	var config OpenCd
 	file, err := os.ReadFile(OPENCD_CONFIG)
 	if err != nil {
-		panic(err)
+		return config, err
 	}
 	err = yaml.Unmarshal(file, &config)
 	if err != nil {
-		panic(err)
+		return config, err
 	}
 	for _, env := range config.Environments {
 		if env.Name == "" {
@@ -73,6 +82,7 @@ func readOpencdFile() (OpenCd, error) {
 			return config, fmt.Errorf("не указан файл docker-compose в окружении %s opencd.yaml", env.Name)
 		}
 	}
+
 	return config, nil
 }
 
@@ -108,7 +118,6 @@ func cmd(command string) error {
 	run.Stderr = os.Stderr
 	err := run.Run()
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	return nil

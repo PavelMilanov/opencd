@@ -4,3 +4,13 @@ environments:
     local: dev
     remote: origin/dev
     docker: docker-compose.yaml
+  
+  - production:
+    name: production
+    local: main
+    remote: origin/main
+    docker: docker-compose.yaml
+
+settings:
+  cache:
+    delete: true
