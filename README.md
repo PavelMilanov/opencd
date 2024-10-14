@@ -27,7 +27,7 @@ ___
 - выполнить последовательно следующие команды:
 
 ```bash
-wget https://github.com/PavelMilanov/opencd/releases/download/v0.2.3/install.sh
+wget https://github.com/PavelMilanov/opencd/releases/download/v0.2.4/install.sh
 sudo bash install ./install.sh
 ```
 
@@ -36,7 +36,7 @@ sudo bash install ./install.sh
 ```bash
 opencd version
 
-opencd version 0.2.3
+opencd version 0.2.4
 git version 2.45.0
 Docker Compose version v2.27.0-desktop.2
 ```
