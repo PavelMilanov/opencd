@@ -32,17 +32,20 @@ type Settings struct {
 }
 
 // Возвращает текущую директорию.
-func getCurrentDirectory() string {
+func getCurrentDirectory() (string, error) {
 	pwd, err := os.Getwd()
 	if err != nil {
-		panic(err)
+		return "", err
 	}
-	return pwd
+	return pwd, nil
 }
 
 // Проверка на наличие необходимых файлов.
 func checkComponents() error {
-	pwd := getCurrentDirectory()
+	pwd, err := getCurrentDirectory()
+	if err != nil {
+		return err
+	}
 	configFile := pwd + "/" + OPENCD_CONFIG
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
 		return fmt.Errorf("не найден файл %s", configFile)
@@ -91,7 +94,10 @@ func parsePathFile(filepath string) (string, error) {
 	// парсинг относительного пути файла
 	relativePath, _ := regexp.Compile(`^.\/`)
 	idx := relativePath.FindStringIndex(filepath)
-	pwd := getCurrentDirectory()
+	pwd, err := getCurrentDirectory()
+	if err != nil {
+		return "", err
+	}
 	if len(idx) > 0 {
 		i := idx[1]
 		return pwd + "/" + filepath[i:], nil
