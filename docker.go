@@ -23,11 +23,22 @@ type Service struct {
 // Форматированный вывод строк.
 func formatChankData(chank string) (string, string) {
 	re := regexp.MustCompile(`context:[^\s]+`)
+	re2 := regexp.MustCompile(`^\w+`)   // имя сервиса всегда с новой строки во фрагменте файла
 	build := re.FindString(chank)       // context:./test/test]
 	str := strings.Split(build, ":")[1] // ./test/test]
-	re2 := regexp.MustCompile(`^\w+`)   // имя сервиса всегда с новой строки во фрагменте файла
 	name := re2.FindString(chank)
-	return name, str[2 : len(str[:len(str)-1])-1] // test, test/test
+	re3 := regexp.MustCompile(`^.\/[a-zA-Z]+`) // ищет ./build_dir
+	dir := re3.FindString(str)
+	if dir == "" { // если нет совпадений -> ищем build: .
+		re4 := regexp.MustCompile(`^.`) // ищет ./build_dir
+		dir2 := re4.FindString(str)
+		if dir2 != "." {
+			fmt.Printf("%s:\n  build:\n    context: <./app_dir> или <.>\n", name)
+			os.Exit(0)
+		}
+		return name, dir2
+	}
+	return name, dir
 }
 
 // Выполняет парсинг файла docker-compose. Возврашает список сервисов, у которых собираемый локально образ.
