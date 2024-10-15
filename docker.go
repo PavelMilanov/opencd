@@ -90,7 +90,7 @@ func buildDockerCompose(services []Service, composeFile string) ([]string, error
 	err := run.Run()
 	if err != nil {
 		fmt.Println(err)
-		return []string{}, err
+		return serviceNameList, err
 	}
 	return serviceNameList, nil
 }
