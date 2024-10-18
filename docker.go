@@ -23,10 +23,11 @@ type Service struct {
 // Форматированный вывод строк.
 func formatChankData(chank string) (string, string) {
 	re := regexp.MustCompile(`context:[^\s]+`)
-	re2 := regexp.MustCompile(`^\w+`)   // имя сервиса всегда с новой строки во фрагменте файла
-	build := re.FindString(chank)       // context:./test/test]
-	str := strings.Split(build, ":")[1] // ./test/test]
+	re2 := regexp.MustCompile(`^\w+(-\w+)*`) // имя сервиса всегда с новой строки во фрагменте файла
+	build := re.FindString(chank)            // context:./test/test]
+	str := strings.Split(build, ":")[1]      // ./test/test]
 	name := re2.FindString(chank)
+
 	re3 := regexp.MustCompile(`^.\/[a-zA-Z]+`) // ищет ./build_dir
 	dir := re3.FindString(str)
 	if dir == "" { // если нет совпадений -> ищем build: .
@@ -58,17 +59,19 @@ func parseDockerCompose(filename string) ([]Service, error) {
 
 	re := regexp.MustCompile(`map`)                           // ищем в сыром тексте map и заменяем на пустой символ
 	formatData := re.ReplaceAllString(data, "")               // замена "map" => ""
-	reService := regexp.MustCompile(`[a-z]+:\[build`)         // для разделение текста на сервисы
+	reService := regexp.MustCompile(`\w+(-\w+)*:\[build`)     // для разделение текста на сервисы
 	parseData := reService.FindAllStringIndex(formatData, -1) // [[1 15] [338 355] [675 690] [963 979]]
 
 	services := []Service{}
 	for i := 0; i < len(parseData); i++ {
 		if i == len(parseData)-1 {
 			chank := formatData[parseData[i][0] : len(formatData)-1]
+			fmt.Println(chank)
 			name, build := formatChankData(chank)
 			services = append(services, Service{Name: name, Build: build})
 		} else {
 			chank := formatData[parseData[i][0]:parseData[i+1][0]] // последний кусок из списка
+			fmt.Println(chank)
 			name, build := formatChankData(chank)
 			services = append(services, Service{Name: name, Build: build})
 		}
@@ -90,7 +93,7 @@ func buildDockerCompose(services []Service, composeFile string) ([]string, error
 	err := run.Run()
 	if err != nil {
 		fmt.Println(err)
-		return []string{}, err
+		return serviceNameList, err
 	}
 	return serviceNameList, nil
 }
