@@ -61,7 +61,7 @@ func parseDockerCompose(filename string) ([]Service, error) {
 	formatData := re.ReplaceAllString(data, "")               // замена "map" => ""
 	reService := regexp.MustCompile(`\w+(-\w+)*:\[build`)     // для разделение текста на сервисы
 	parseData := reService.FindAllStringIndex(formatData, -1) // [[1 15] [338 355] [675 690] [963 979]]
-	fmt.Println(parseData)
+
 	services := []Service{}
 	for i := 0; i < len(parseData); i++ {
 		if i == len(parseData)-1 {
