@@ -133,7 +133,7 @@ func version() {
 
 // Очищает кеш docker
 func dockerPrnune() {
-	docker := [3]string{"docker container  rm $(docker ps -a -f status=exited -q)", "docker image rm $(docker image ls -f dangling=true -q)", "docker volume rm $(docker volume ls -f dangling=true -q)"}
+	docker := [3]string{"docker ps -a -f status=exited -q | xargs -r docker container rm", "docker image ls -f dangling=true -q | xargs -r docker image rm", "docker volume ls -f dangling=true -q | xargs -r docker volume rm"}
 
 	var wg sync.WaitGroup
 	wg.Add(3)
