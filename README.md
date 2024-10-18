@@ -28,7 +28,7 @@ ___
 
 ```bash
 wget https://github.com/PavelMilanov/opencd/releases/download/v0.2.4/install.sh
-sudo bash install ./install.sh
+sudo bash ./install.sh
 ```
 
 - проверка установленной версии opencd:
