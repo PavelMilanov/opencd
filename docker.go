@@ -66,12 +66,10 @@ func parseDockerCompose(filename string) ([]Service, error) {
 	for i := 0; i < len(parseData); i++ {
 		if i == len(parseData)-1 {
 			chank := formatData[parseData[i][0] : len(formatData)-1]
-			fmt.Println(chank)
 			name, build := formatChankData(chank)
 			services = append(services, Service{Name: name, Build: build})
 		} else {
 			chank := formatData[parseData[i][0]:parseData[i+1][0]] // последний кусок из списка
-			fmt.Println(chank)
 			name, build := formatChankData(chank)
 			services = append(services, Service{Name: name, Build: build})
 		}
