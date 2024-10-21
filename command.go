@@ -11,7 +11,7 @@ import (
 )
 
 func errShutdown(err error) {
-	fmt.Println(err)
+	log.Error(err.Error())
 	os.Exit(0)
 }
 
@@ -41,7 +41,7 @@ func deploy(config Environments, settings Settings, stage string) {
 		services, err := parseDockerCompose(config.Docker)
 		if err != nil {
 			color.Red("Ошибка при чтении файла docker compose")
-			errShutdown(err)
+			os.Exit(0)
 		}
 		updateServices := analuzeChanges(services, changes)
 		if len(updateServices) == 0 {
@@ -55,18 +55,17 @@ func deploy(config Environments, settings Settings, stage string) {
 		color.Cyan("Обновление проекта")
 		branch, err := createDeployBranch(config.Remote)
 		if err != nil {
-			color.Red("Ошибка при создании временной ветки")
+			color.Red("Ошибка")
 			errShutdown(err)
 		}
 		err = gitMerge(config.Local, branch)
 		if err != nil {
-			color.Red("Ошибка при слиянии веток. Временная ветка удалена")
-			deleteDeployBranch(branch)
+			color.Red("Ошибка")
 			errShutdown(err)
 		}
 		err = deleteDeployBranch(branch)
 		if err != nil {
-			color.Red("Ошибка при удалении временной ветки")
+			color.Red("Ошибка")
 			errShutdown(err)
 		}
 		color.Cyan(STEPS[1])
@@ -80,7 +79,7 @@ func deploy(config Environments, settings Settings, stage string) {
 		fmt.Println(upDescription)
 		err = upDockerCompose(buildServices, config.Docker)
 		if err != nil {
-			color.Red("Ошибка при работе Docker")
+			color.Red("Ошибка при обновлении образов Docker")
 			errShutdown(err)
 		}
 		color.Green("Обновление прошло успешно")
@@ -88,7 +87,7 @@ func deploy(config Environments, settings Settings, stage string) {
 		services, err := parseDockerCompose(config.Docker)
 		if err != nil {
 			color.Red("Ошибка при чтении файла docker compose")
-			errShutdown(err)
+			os.Exit(0)
 		}
 		barListName := []string{}
 		for _, service := range services {
@@ -105,12 +104,12 @@ func deploy(config Environments, settings Settings, stage string) {
 		fmt.Println(upDescription)
 		err = upDockerCompose(buildServices, config.Docker)
 		if err != nil {
-			color.Red("Ошибка при работе Docker")
+			color.Red("Ошибка при обновлении образов Docker")
 			errShutdown(err)
 		}
 		color.Green("Обновление прошло успешно")
 	default:
-		fmt.Println("флаг не распознан")
+		color.Red("флаг не распознан")
 	}
 	if settings.Cache.Delete {
 		color.Cyan(STEPS[3])

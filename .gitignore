@@ -5,3 +5,4 @@ opencd.yaml
 docker-compose.*
 .obsidian
 .DS_Store
+opencd.log

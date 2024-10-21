@@ -56,6 +56,7 @@ func analuzeChanges(services []Service, commits []string) []Service {
 			}
 		}
 	}
+	log.Infof("изменения в файлах: %s", changeService)
 	return changeService
 }
 
@@ -64,7 +65,6 @@ func createDeployBranch(remoteBranch string) (string, error) {
 	command := fmt.Sprintf("git log %s | head  -1", remoteBranch)
 	commitsha, err := exec.Command("bash", "-c", command).Output()
 	if err != nil {
-		fmt.Println(err)
 		return "", err
 	}
 	shortSha := strings.Split(string(commitsha), " ")[1][:7] // commit 11e00c3b19f88ec7602c4d115871113e49f63e07 => 11e00c3
@@ -85,7 +85,6 @@ func deleteDeployBranch(branch string) error {
 	run.Stderr = os.Stderr
 	err := run.Run()
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	return nil
@@ -99,7 +98,6 @@ func gitMerge(localBranch, deployBranch string) error {
 	run.Stderr = os.Stderr
 	err := run.Run()
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	return nil

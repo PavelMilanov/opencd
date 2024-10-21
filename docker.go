@@ -46,13 +46,11 @@ func formatChankData(chank string) (string, string) {
 func parseDockerCompose(filename string) ([]Service, error) {
 	file, err := os.ReadFile(filename)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	var conf DockerCompose
 	err = yaml.Unmarshal(file, &conf)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	data := fmt.Sprintf("%v", conf.Services)
@@ -74,6 +72,7 @@ func parseDockerCompose(filename string) ([]Service, error) {
 			services = append(services, Service{Name: name, Build: build})
 		}
 	}
+	log.Infof("сервисы для обновления: %s", services)
 	return services, nil
 }
 
@@ -90,7 +89,6 @@ func buildDockerCompose(services []Service, composeFile string) ([]string, error
 	run.Stderr = os.Stderr
 	err := run.Run()
 	if err != nil {
-		fmt.Println(err)
 		return serviceNameList, err
 	}
 	return serviceNameList, nil
@@ -104,7 +102,6 @@ func upDockerCompose(services []string, composeFile string) error {
 	run.Stderr = os.Stderr
 	err := run.Run()
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	return nil
