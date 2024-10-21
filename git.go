@@ -56,6 +56,7 @@ func analuzeChanges(services []Service, commits []string) []Service {
 			}
 		}
 	}
+	log.Infof("изменения в файлах: %s", changeService)
 	return changeService
 }
 

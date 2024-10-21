@@ -11,7 +11,7 @@ import (
 )
 
 func errShutdown(err error) {
-	fmt.Println(err)
+	log.Error(err.Error())
 	os.Exit(0)
 }
 

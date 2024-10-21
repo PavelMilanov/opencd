@@ -4,11 +4,37 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path"
+	"runtime"
+
+	"github.com/sirupsen/logrus"
 )
 
 const OPENCD_CONFIG = "opencd.yaml"
 
 var VERSION string
+var LOGFILE string // "opencd.log"
+
+var log = logrus.New()
+
+func init() {
+	log.SetReportCaller(true)
+	log.SetFormatter(&logrus.TextFormatter{
+		FullTimestamp:   true,
+		TimestampFormat: "2006/01/02 15:04:00",
+		CallerPrettyfier: func(f *runtime.Frame) (string, string) {
+			_, filename := path.Split(f.File)
+			filename = fmt.Sprintf("[ %s:%d]", filename, f.Line)
+			return "", filename
+		},
+	})
+	file, err := os.OpenFile(LOGFILE, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err == nil {
+		log.SetOutput(file)
+	} else {
+		log.Info("Не удалось открыть файл логов, используется стандартный stderr")
+	}
+}
 
 func main() {
 	if len(os.Args) > 1 {

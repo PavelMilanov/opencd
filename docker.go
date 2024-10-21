@@ -72,6 +72,7 @@ func parseDockerCompose(filename string) ([]Service, error) {
 			services = append(services, Service{Name: name, Build: build})
 		}
 	}
+	log.Infof("сервисы для обновления: %s", services)
 	return services, nil
 }
 
