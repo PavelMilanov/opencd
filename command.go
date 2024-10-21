@@ -10,6 +10,11 @@ import (
 	"github.com/fatih/color"
 )
 
+func errShutdown(err error) {
+	fmt.Println(err)
+	os.Exit(0)
+}
+
 // Производит git fetch, git merge, docker build, docker up исходя из изменений в коммитах.
 // Собирает и запускает сервисы в указанном файле docker-compose, где обновились файлы.
 func deploy(config Environments, settings Settings, stage string) {
@@ -25,23 +30,23 @@ func deploy(config Environments, settings Settings, stage string) {
 	case "merge":
 		color.Cyan(STEPS[0])
 		if err := gitFetch(); err != nil {
-			color.Red("Не найдена удаленная ветка. %s", err)
-			os.Exit(0)
+			color.Red("Не найдена удаленная ветка")
+			errShutdown(err)
 		}
 		changes, err := gitDiff(config.Local, config.Remote)
 		if err != nil {
-			color.Red("Ошибка при анализе изменений удаленной ветки. %s", err)
-			os.Exit(0)
+			color.Red("Ошибка при анализе изменений удаленной ветки")
+			errShutdown(err)
 		}
 		services, err := parseDockerCompose(config.Docker)
 		if err != nil {
-			color.Red("Ошибка при чтении файла docker compose %s", err)
+			color.Red("Ошибка при чтении файла docker compose")
 			os.Exit(0)
 		}
 		updateServices := analuzeChanges(services, changes)
 		if len(updateServices) == 0 {
 			color.Red("Изменений не обнаружено")
-			os.Exit(0)
+			errShutdown(err)
 		}
 		barListName := []string{}
 		for _, service := range updateServices {
@@ -50,34 +55,39 @@ func deploy(config Environments, settings Settings, stage string) {
 		color.Cyan("Обновление проекта")
 		branch, err := createDeployBranch(config.Remote)
 		if err != nil {
-			color.Red(err.Error())
-			os.Exit(0)
+			color.Red("Ошибка")
+			errShutdown(err)
 		}
 		err = gitMerge(config.Local, branch)
 		if err != nil {
-			color.Red(err.Error())
+			color.Red("Ошибка")
+			errShutdown(err)
 		}
 		err = deleteDeployBranch(branch)
 		if err != nil {
-			color.Red(err.Error())
+			color.Red("Ошибка")
+			errShutdown(err)
 		}
 		color.Cyan(STEPS[1])
 		buildServices, err := buildDockerCompose(updateServices, config.Docker)
 		if err != nil {
-			color.Red(err.Error())
+			color.Red("Ошибка при сборке образов Docker")
+			errShutdown(err)
 		}
 		color.Cyan(STEPS[2])
 		upDescription := fmt.Sprintf("Обновление сервисов %s", strings.Join(barListName, " "))
 		fmt.Println(upDescription)
 		err = upDockerCompose(buildServices, config.Docker)
 		if err != nil {
-			color.Red(err.Error())
+			color.Red("Ошибка при обновлении образов Docker")
+			errShutdown(err)
 		}
 		color.Green("Обновление прошло успешно")
 	case "docker":
 		services, err := parseDockerCompose(config.Docker)
 		if err != nil {
-			color.Red(err.Error())
+			color.Red("Ошибка при чтении файла docker compose")
+			os.Exit(0)
 		}
 		barListName := []string{}
 		for _, service := range services {
@@ -86,14 +96,16 @@ func deploy(config Environments, settings Settings, stage string) {
 		color.Cyan(STEPS[1])
 		buildServices, err := buildDockerCompose(services, config.Docker)
 		if err != nil {
-			color.Red(err.Error())
+			color.Red("Ошибка при сборке образов Docker")
+			errShutdown(err)
 		}
 		color.Cyan(STEPS[2])
 		upDescription := fmt.Sprintf("Обновление сервисов %s", strings.Join(barListName, " "))
 		fmt.Println(upDescription)
 		err = upDockerCompose(buildServices, config.Docker)
 		if err != nil {
-			color.Red(err.Error())
+			color.Red("Ошибка при обновлении образов Docker")
+			errShutdown(err)
 		}
 		color.Green("Обновление прошло успешно")
 	default:
@@ -120,7 +132,7 @@ func version() {
 
 // Очищает кеш docker
 func dockerPrnune() {
-	docker := [3]string{"docker container  rm $(docker ps -a -f status=exited -q)", "docker image rm $(docker image ls -f dangling=true -q)", "docker volume rm $(docker volume ls -f dangling=true -q)"}
+	docker := [3]string{"docker ps -a -f status=exited -q | xargs -r docker container rm", "docker image ls -f dangling=true -q | xargs -r docker image rm", "docker volume ls -f dangling=true -q | xargs -r docker volume rm"}
 
 	var wg sync.WaitGroup
 	wg.Add(3)

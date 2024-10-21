@@ -23,10 +23,11 @@ type Service struct {
 // Форматированный вывод строк.
 func formatChankData(chank string) (string, string) {
 	re := regexp.MustCompile(`context:[^\s]+`)
-	re2 := regexp.MustCompile(`^\w+`)   // имя сервиса всегда с новой строки во фрагменте файла
-	build := re.FindString(chank)       // context:./test/test]
-	str := strings.Split(build, ":")[1] // ./test/test]
+	re2 := regexp.MustCompile(`^\w+(-\w+)*`) // имя сервиса всегда с новой строки во фрагменте файла
+	build := re.FindString(chank)            // context:./test/test]
+	str := strings.Split(build, ":")[1]      // ./test/test]
 	name := re2.FindString(chank)
+
 	re3 := regexp.MustCompile(`^.\/[a-zA-Z]+`) // ищет ./build_dir
 	dir := re3.FindString(str)
 	if dir == "" { // если нет совпадений -> ищем build: .
@@ -56,7 +57,7 @@ func parseDockerCompose(filename string) ([]Service, error) {
 
 	re := regexp.MustCompile(`map`)                           // ищем в сыром тексте map и заменяем на пустой символ
 	formatData := re.ReplaceAllString(data, "")               // замена "map" => ""
-	reService := regexp.MustCompile(`[a-z]+:\[build`)         // для разделение текста на сервисы
+	reService := regexp.MustCompile(`\w+(-\w+)*:\[build`)     // для разделение текста на сервисы
 	parseData := reService.FindAllStringIndex(formatData, -1) // [[1 15] [338 355] [675 690] [963 979]]
 
 	services := []Service{}
@@ -87,7 +88,8 @@ func buildDockerCompose(services []Service, composeFile string) ([]string, error
 	run.Stderr = os.Stderr
 	err := run.Run()
 	if err != nil {
-		return []string{}, err
+		fmt.Println(err)
+		return serviceNameList, err
 	}
 	return serviceNameList, nil
 }
