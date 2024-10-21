@@ -25,17 +25,17 @@ func deploy(config Environments, settings Settings, stage string) {
 	case "merge":
 		color.Cyan(STEPS[0])
 		if err := gitFetch(); err != nil {
-			color.Red("Не найдена удаленная ветка")
+			color.Red("Не найдена удаленная ветка. %s", err)
 			os.Exit(0)
 		}
 		changes, err := gitDiff(config.Local, config.Remote)
 		if err != nil {
-			color.Red("Ошибка при анализе изменений удаленной ветки")
+			color.Red("Ошибка при анализе изменений удаленной ветки. %s", err)
 			os.Exit(0)
 		}
 		services, err := parseDockerCompose(config.Docker)
 		if err != nil {
-			color.Red("Ошибка при чтении файла docker compose")
+			color.Red("Ошибка при чтении файла docker compose %s", err)
 			os.Exit(0)
 		}
 		updateServices := analuzeChanges(services, changes)
@@ -50,33 +50,34 @@ func deploy(config Environments, settings Settings, stage string) {
 		color.Cyan("Обновление проекта")
 		branch, err := createDeployBranch(config.Remote)
 		if err != nil {
-			return
+			color.Red(err.Error())
+			os.Exit(0)
 		}
 		err = gitMerge(config.Local, branch)
 		if err != nil {
-			fmt.Println(err)
+			color.Red(err.Error())
 		}
 		err = deleteDeployBranch(branch)
 		if err != nil {
-			fmt.Println(err)
+			color.Red(err.Error())
 		}
 		color.Cyan(STEPS[1])
 		buildServices, err := buildDockerCompose(updateServices, config.Docker)
 		if err != nil {
-			fmt.Println(err)
+			color.Red(err.Error())
 		}
 		color.Cyan(STEPS[2])
 		upDescription := fmt.Sprintf("Обновление сервисов %s", strings.Join(barListName, " "))
 		fmt.Println(upDescription)
 		err = upDockerCompose(buildServices, config.Docker)
 		if err != nil {
-			fmt.Println(err)
+			color.Red(err.Error())
 		}
 		color.Green("Обновление прошло успешно")
 	case "docker":
 		services, err := parseDockerCompose(config.Docker)
 		if err != nil {
-			fmt.Println(err)
+			color.Red(err.Error())
 		}
 		barListName := []string{}
 		for _, service := range services {
@@ -85,18 +86,18 @@ func deploy(config Environments, settings Settings, stage string) {
 		color.Cyan(STEPS[1])
 		buildServices, err := buildDockerCompose(services, config.Docker)
 		if err != nil {
-			fmt.Println(err)
+			color.Red(err.Error())
 		}
 		color.Cyan(STEPS[2])
 		upDescription := fmt.Sprintf("Обновление сервисов %s", strings.Join(barListName, " "))
 		fmt.Println(upDescription)
 		err = upDockerCompose(buildServices, config.Docker)
 		if err != nil {
-			fmt.Println(err)
+			color.Red(err.Error())
 		}
 		color.Green("Обновление прошло успешно")
 	default:
-		fmt.Println("флаг не распознан")
+		color.Red("флаг не распознан")
 	}
 	if settings.Cache.Delete {
 		color.Cyan(STEPS[3])
