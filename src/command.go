@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 	"sync"
 
@@ -120,6 +121,7 @@ func deploy(config Environments, settings Settings, stage string) {
 
 // Вывод информации о версии используемого ПО
 func version() {
+	fmt.Println(runtime.Version())
 	fmt.Println("opencd version", VERSION)
 	err := cmd("git version")
 	if err != nil {
