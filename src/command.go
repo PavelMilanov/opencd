@@ -121,8 +121,8 @@ func deploy(config Environments, settings Settings, stage string) {
 
 // Вывод информации о версии используемого ПО
 func version() {
-	fmt.Println(runtime.Version())
-	fmt.Println("opencd version", VERSION)
+	v := fmt.Sprintf("%s\nopencd version: %s", runtime.Version(), VERSION)
+	fmt.Println(v)
 	err := cmd("git version")
 	if err != nil {
 		fmt.Println(err)
