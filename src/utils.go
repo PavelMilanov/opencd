@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 
 	"gopkg.in/yaml.v3"
@@ -25,7 +26,7 @@ func checkComponents() error {
 	if err != nil {
 		return err
 	}
-	configFile := pwd + "/" + OPENCD_CONFIG
+	configFile := filepath.Join(pwd, OPENCD_CONFIG)
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
 		return fmt.Errorf("не найден файл %s", configFile)
 	}
@@ -34,7 +35,7 @@ func checkComponents() error {
 		return err
 	}
 	for _, data := range config.Environments {
-		file := pwd + "/" + data.Docker
+		file := filepath.Join(pwd, data.Docker)
 		if _, err := os.Stat(file); os.IsNotExist(err) {
 			return fmt.Errorf("не найден файл %s", file)
 		}
@@ -69,29 +70,29 @@ func readOpencdFile() (OpenCd, error) {
 }
 
 // Парсинг пути файла (относитеьный и абсолютный путь).
-func parsePathFile(filepath string) (string, error) {
+func parsePathFile(path string) (string, error) {
 	// парсинг относительного пути файла
 	relativePath, _ := regexp.Compile(`^.\/`)
-	idx := relativePath.FindStringIndex(filepath)
+	idx := relativePath.FindStringIndex(path)
 	pwd, err := getCurrentDirectory()
 	if err != nil {
 		return "", err
 	}
 	if len(idx) > 0 {
 		i := idx[1]
-		return pwd + "/" + filepath[i:], nil
+		return filepath.Join(pwd, path[i:]), nil
 	} else {
-		if filepath == OPENCD_CONFIG {
-			return pwd + "/" + filepath, nil
+		if path == OPENCD_CONFIG {
+			return filepath.Join(pwd, path), nil
 		} else {
 			// парсинг абсолютного пути файла
 			absolutePath, _ := regexp.Compile(`^/`)
-			match := absolutePath.MatchString(filepath)
+			match := absolutePath.MatchString(path)
 			if match {
-				return filepath, nil
+				return path, nil
 			}
 			// ошибка, если не найдет файл
-			return "", errors.New("файл не найден: " + filepath)
+			return "", errors.New("файл не найден: " + path)
 		}
 	}
 }
