@@ -1,0 +1,37 @@
+name: Build opencd
+
+on:
+  push:
+    paths-ignore:
+      - ".github/**"
+      - "README.md"
+      - "Makefile"
+      - "install.sh"
+      - "docs/**"
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build Go Binary
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+
+      - name: Get dependencies
+        run: go mod tidy
+
+      - name: Build
+        run: |
+          cd src && GOOS=linux GOARCH=amd64 go install -ldflags="-X 'main.VERSION=v0.2.6'"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: opencd
+          path: /go/bin/opencd
