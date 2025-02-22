@@ -30,12 +30,9 @@ jobs:
       - name: Build
         run: cd src && go install -ldflags="-X 'main.VERSION=v0.2.6'"
 
-      - name: test
-        run: find / -type f -name opencd
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: opencd
-          path: $GOPATH/bin
+          path: /home/runner/go/bin/opencd
 
