@@ -2,8 +2,6 @@ name: Build opencd
 
 on:
   workflow_dispatch:
-
-on:
   push:
     paths-ignore:
       - ".github/**"
