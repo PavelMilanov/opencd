@@ -28,10 +28,11 @@ jobs:
         run: cd src && go mod tidy
 
       - name: Build
-        run: cd src && GOOS=linux GOARCH=amd64 go install -ldflags="-X 'main.VERSION=v0.2.6'"
+        run: cd src && go install -ldflags="-X 'main.VERSION=v0.2.6'"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: opencd
-          path: /go/bin
+          path: /home/runner/go/bin/opencd
+
